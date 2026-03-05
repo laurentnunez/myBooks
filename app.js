@@ -249,11 +249,12 @@ document.getElementById("saveButton").onclick = async () => {
   tx.objectStore("bd").add(bd);
 
   tx.oncomplete = () => {
-    loadBD();
-    resetForm();
-    importedCoverDataURL = "";
-    document.getElementById("modal").classList.add("hidden");
-  };
+  try { loadBD(); } catch(e){}
+  try { resetForm(); } catch(e){}
+  importedCoverDataURL = "";
+  const modal = document.getElementById("modal");
+  if (modal) modal.classList.add("hidden");
+	};
 };
 
 function resetForm() {

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ma Collection BD</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>📚 Ma Collection BD</h1>
+    <button id="addButton">Ajouter une BD ➕</button>
+  </header>
+
+  <section id="bdList"></section>
+
+  <!-- Modal d’ajout -->
+  <div id="modal" class="hidden">
+    <div class="modal-content">
+      <h2>Ajouter une BD</h2>
+      <input id="titleInput" placeholder="Titre">
+      <input id="authorInput" placeholder="Auteur(s)">
+      <input id="artistInput" placeholder="Dessinateur(s)">
+      <input id="editorInput" placeholder="Éditeur">
+      <input type="date" id="dateInput">
+      
+      <label>Statut :</label>
+      <select id="statusInput">
+        <option value="a_lire">À lire</option>
+        <option value="lu">Lu</option>
+        <option value="wishlist">Wishlist</option>
+        <option value="a_vendre">À vendre</option>
+      </select>
+
+      <label>Couverture :</label>
+      <input type="file" accept="image/*" id="coverInput">
+
+      <button id="saveButton">Enregistrer</button>
+      <button id="cancelButton">Annuler</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+
+</body>
+</html>

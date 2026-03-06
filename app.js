@@ -1,168 +1,85 @@
-// =====================================
-// PWA : enregistrement du Service Worker
-// =====================================
+/* =========================================================
+   PWA : Service Worker (facultatif mais recommandé)
+   ========================================================= */
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./service-worker.js").catch(() => {});
   });
 }
 
-// =====================================
-// Thème sombre : toggle + persistence
-// =====================================
+/* =========================================================
+   Thème sombre : toggle + persistance
+   ========================================================= */
 const THEME_KEY = "bd-theme";
 const themeToggleBtn = document.getElementById("themeToggle");
 
-function applyTheme(t){
-  document.body.classList.toggle("dark", t === "dark");
-  // Icône
-  themeToggleBtn.textContent = (t === "dark") ? "☀️" : "🌙";
+function applyTheme(mode) {
+  document.body.classList.toggle("dark", mode === "dark");
+  if (themeToggleBtn) {
+    themeToggleBtn.textContent = mode === "dark" ? "☀️" : "🌙";
+  }
+}
+function systemPrefersDark() {
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+let currentTheme = localStorage.getItem(THEME_KEY) || (systemPrefersDark() ? "dark" : "light");
+applyTheme(currentTheme);
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", () => {
+    currentTheme = currentTheme === "dark" ? "light" : "dark";
+    localStorage.setItem(THEME_KEY, currentTheme);
+    applyTheme(currentTheme);
+  });
 }
 
-function getSystemPref(){
-  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark":"light";
-}
-
-// Init thème
-let savedTheme = localStorage.getItem(THEME_KEY) || getSystemPref();
-applyTheme(savedTheme);
-
-themeToggleBtn.addEventListener("click", () => {
-  savedTheme = (savedTheme === "dark") ? "light" : "dark";
-  localStorage.setItem(THEME_KEY, savedTheme);
-  applyTheme(savedTheme);
-});
-
-// =====================================
-// IndexedDB
-// =====================================
+/* =========================================================
+   IndexedDB : BDCollection / store "bd"
+   ========================================================= */
 let db;
-const request = indexedDB.open("BDCollection", 1);
+const openReq = indexedDB.open("BDCollection", 1);
 
-request.onupgradeneeded = (event) => {
+openReq.onupgradeneeded = (event) => {
   db = event.target.result;
-  db.createObjectStore("bd", { keyPath: "id", autoIncrement: true });
+  if (!db.objectStoreNames.contains("bd")) {
+    db.createObjectStore("bd", { keyPath: "id", autoIncrement: true });
+  }
+};
+openReq.onsuccess = (event) => {
+  db = event.target.result;
+  loadBD(); // premier rendu
+};
+openReq.onerror = () => {
+  console.error("Erreur d'ouverture IndexedDB");
 };
 
-request.onsuccess = (event) => {
-  db = event.target.result;
-  loadBD();
-};
+/* =========================================================
+   État UI / Filtres / Import ISBN
+   ========================================================= */
+let currentFilter = "all";              // filtre par statut
+let importedCoverDataURL = "";          // couverture importée (base64)
+const listEl = document.getElementById("bdList");
+const modalEl = document.getElementById("modal");
 
-// =====================================
-// Rendu de la liste
-// =====================================
-function loadBD() {
-  const tx = db.transaction("bd", "readonly");
-  const store = tx.objectStore("bd");
-  const req = store.getAll();
-
-  req.onsuccess = () => {
-    const list = document.getElementById("bdList");
-    list.innerHTML = "";
-
-    req.result
-      .filter(bd => currentFilter === "all" || bd.status === currentFilter)
-      .forEach((bd) => {
-      const card = document.createElement("div");
-      card.className = "bd-card";
-
-      const coverHTML = bd.cover
-      ? `<img class="bd-cover" src="${bd.cover}" alt="Couverture BD">`
-      : `<div class="bd-cover" aria-label="Pas de couverture"></div>`;
-
-
-      card.innerHTML = `
-        ${coverHTML}
-        <div>
-          <h3>${escapeHTML(bd.title)}</h3>
-          <p><strong>Auteur :</strong> ${escapeHTML(bd.author)}</p>
-          <p><strong>Dessinateur :</strong> ${escapeHTML(bd.artist)}</p>
-          <p><strong>Éditeur :</strong> ${escapeHTML(bd.editor || "")}</p>
-          <p><strong>Date :</strong> ${escapeHTML(bd.date || "")}</p>
-          <p><strong>Statut :</strong> ${formatStatus(bd.status)}</p>
-          <div class="bd-actions">
-          <button class="btn" onclick="editBD(${bd.id})">✏️ Modifier</button>  
-          <button class="btn" onclick="deleteBD(${bd.id})">🗑️ Supprimer</button>
-          </div>
-        </div>
-      `;
-      list.appendChild(card);
-    });
-  };
-}
-
-function escapeHTML(s){
-  return (s||"").toString().replace(/[&<>"']/g, (m)=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+/* =========================================================
+   Utilitaires
+   ========================================================= */
+function escapeHTML(s) {
+  return (s || "").toString().replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;"
   }[m]));
 }
-
 function formatStatus(code) {
-  const labels = {
-    a_lire: "À lire",
-    lu: "Lu",
-    wishlist: "Wishlist",
-    a_vendre: "À vendre",
-  };
+  const labels = { a_lire: "À lire", lu: "Lu", wishlist: "Wishlist", a_vendre: "À vendre" };
   return labels[code] || code;
 }
-
-function deleteBD(id) {
-  const tx = db.transaction("bd", "readwrite");
-  tx.objectStore("bd").delete(id);
-  tx.oncomplete = loadBD;
+function toBase64(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
 }
-window.deleteBD = deleteBD; // pour onclick inline
-
-function editBD(id) {
-  const tx = db.transaction("bd", "readonly");
-  const store = tx.objectStore("bd");
-  const req = store.get(id);
-
-  req.onsuccess = () => {
-    const bd = req.result;
-
-    // Remplir la modale
-    document.getElementById("titleInput").value  = bd.title;
-    document.getElementById("authorInput").value = bd.author;
-    document.getElementById("artistInput").value = bd.artist;
-    document.getElementById("editorInput").value = bd.editor;
-    document.getElementById("dateInput").value   = bd.date;
-    document.getElementById("statusInput").value = bd.status;
-
-    // Important : pour la couverture
-    importedCoverDataURL = bd.cover || "";
-
-    // On stocke l’ID dans la modale (data attribute)
-    document.getElementById("modal").dataset.editId = id;
-
-    // Ouvrir la modale
-    document.getElementById("modal").classList.remove("hidden");
-  };
-}
-
-
-
-
-
-// =====================================
-// Modal : ouverture / fermeture
-// =====================================
-document.getElementById("addButton").onclick = () => {
-  document.getElementById("modal").classList.remove("hidden");
-};
-
-document.getElementById("cancelButton").onclick = () => {
-  document.getElementById("modal").classList.add("hidden");
-  resetForm();
-};
-
-// =====================================
-// Import ISBN : Google Books (clé) → Open Library (fallback)
-// =====================================
-let importedCoverDataURL = ""; // couverture en base64 (offline)
-
 async function urlToDataURL(url) {
   const res = await fetch(url, { mode: "cors" });
   if (!res.ok) throw new Error("Image introuvable");
@@ -173,7 +90,6 @@ async function urlToDataURL(url) {
     reader.readAsDataURL(blob);
   });
 }
-
 function normalizeDate(input) {
   if (!input) return "";
   if (/^\d{4}(-\d{2}){0,2}$/.test(input)) {
@@ -182,25 +98,230 @@ function normalizeDate(input) {
     return input;
   }
   const d = new Date(input);
-  if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-  return "";
+  return isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
 }
 
+/* =========================================================
+   Rendu de la liste (avec filtre)
+   ========================================================= */
+function loadBD() {
+  if (!db) return;
+  const tx = db.transaction("bd", "readonly");
+  const store = tx.objectStore("bd");
+  const req = store.getAll();
+
+  req.onsuccess = () => {
+    const items = req.result || [];
+    if (listEl) listEl.innerHTML = "";
+
+    items
+      .filter((bd) => currentFilter === "all" || bd.status === currentFilter)
+      .forEach((bd) => {
+        const card = document.createElement("div");
+        card.className = "bd-card";
+
+        const coverHTML = bd.cover
+          ? `<img class="bd-cover" src="${escapeHTML(bd.cover)}" alt="Couverture de ${escapeHTML(bd.title)}" loading="lazy">`
+          : `<div class="bd-cover" aria-label="Pas de couverture"></div>`;
+
+        card.innerHTML = `
+          ${coverHTML}
+          <div>
+            <h3>${escapeHTML(bd.title)}</h3>
+            <p><strong>Auteur :</strong> ${escapeHTML(bd.author)}</p>
+            <p><strong>Dessinateur :</strong> ${escapeHTML(bd.artist || "")}</p>
+            <p><strong>Éditeur :</strong> ${escapeHTML(bd.editor || "")}</p>
+            <p><strong>Date :</strong> ${escapeHTML(bd.date || "")}</p>
+            <p><strong>Statut :</strong> ${formatStatus(bd.status)}</p>
+            <div class="bd-actions">
+              <button class="btn" onclick="editBD(${bd.id})">✏️ Modifier</button>
+              <button class="btn" onclick="deleteBD(${bd.id})">🗑️ Supprimer</button>
+            </div>
+          </div>
+        `;
+        listEl && listEl.appendChild(card);
+      });
+  };
+}
+
+/* =========================================================
+   CRUD : supprimer / éditer
+   ========================================================= */
+function deleteBD(id) {
+  const tx = db.transaction("bd", "readwrite");
+  tx.objectStore("bd").delete(id);
+  tx.oncomplete = loadBD;
+}
+window.deleteBD = deleteBD;
+
+function editBD(id) {
+  const tx = db.transaction("bd", "readonly");
+  const store = tx.objectStore("bd");
+  const req = store.get(id);
+
+  req.onsuccess = () => {
+    const bd = req.result;
+    if (!bd) return;
+
+    // Pré-remplir le formulaire
+    byId("titleInput").value  = bd.title || "";
+    byId("authorInput").value = bd.author || "";
+    byId("artistInput").value = bd.artist || "";
+    byId("editorInput").value = bd.editor || "";
+    byId("dateInput").value   = bd.date || "";
+    byId("statusInput").value = bd.status || "a_lire";
+
+    // Couverture (si pas de nouvelle image à l’enregistrement, on réutilise celle-ci)
+    importedCoverDataURL = bd.cover || "";
+
+    // Stocker l’ID édité dans la modale
+    if (modalEl) modalEl.dataset.editId = String(id);
+
+    // Ouvrir la modale
+    openModal();
+  };
+}
+window.editBD = editBD;
+
+/* =========================================================
+   DOM helpers / Modal
+   ========================================================= */
+function byId(id) { return document.getElementById(id); }
+
+function openModal() {
+  if (!modalEl) return;
+  modalEl.classList.remove("hidden");
+  modalEl.setAttribute("aria-hidden", "false");
+}
+function closeModal() {
+  if (!modalEl) return;
+  modalEl.classList.add("hidden");
+  modalEl.setAttribute("aria-hidden", "true");
+  delete modalEl.dataset.editId;
+}
+
+const addBtn = byId("addButton");
+const cancelBtn = byId("cancelButton");
+if (addBtn) addBtn.onclick = () => openModal();
+if (cancelBtn) cancelBtn.onclick = () => { resetForm(); closeModal(); };
+
+/* =========================================================
+   Enregistrer (création + modification)
+   ========================================================= */
+const saveBtn = byId("saveButton");
+if (saveBtn) {
+  saveBtn.onclick = async () => {
+    try {
+      const file = byId("coverInput")?.files?.[0];
+      let cover = "";
+
+      if (file) {
+        cover = await toBase64(file);
+      } else if (importedCoverDataURL) {
+        cover = importedCoverDataURL;
+      }
+
+      const bd = {
+        title:  byId("titleInput").value,
+        author: byId("authorInput").value,
+        artist: byId("artistInput").value,
+        editor: byId("editorInput").value,
+        date:   byId("dateInput").value,
+        status: byId("statusInput").value,
+        cover
+      };
+
+      const editId = modalEl?.dataset?.editId;
+
+      if (editId) {
+        // --------- MODE MODIFICATION ----------
+        bd.id = Number(editId);
+        const tx = db.transaction("bd", "readwrite");
+        tx.objectStore("bd").put(bd);
+        tx.oncomplete = () => {
+          try { loadBD(); } catch {}
+          try { resetForm(); } catch {}
+          importedCoverDataURL = "";
+          closeModal();
+        };
+      } else {
+        // --------- MODE CREATION -------------
+        const tx = db.transaction("bd", "readwrite");
+        tx.objectStore("bd").add(bd);
+        tx.oncomplete = () => {
+          try { loadBD(); } catch {}
+          try { resetForm(); } catch {}
+          importedCoverDataURL = "";
+          closeModal();
+        };
+      }
+    } catch (e) {
+      console.error("Erreur lors de l’enregistrement :", e);
+      // On ferme quand même la modale pour éviter le blocage visuel
+      closeModal();
+    }
+  };
+}
+
+/* =========================================================
+   Reset du formulaire
+   ========================================================= */
+function resetForm() {
+  const ids = [
+    "titleInput","authorInput","artistInput","editorInput",
+    "dateInput","isbnInput","coverInput"
+  ];
+  ids.forEach((id) => {
+    const el = byId(id);
+    if (!el) return;
+    if (el.tagName === "INPUT" && el.type === "file") el.value = "";
+    else el.value = "";
+  });
+  const statusEl = byId("statusInput");
+  if (statusEl) statusEl.value = "a_lire";
+  importedCoverDataURL = "";
+}
+
+/* =========================================================
+   Filtres par statut (si la barre existe)
+   ========================================================= */
+const filterButtons = document.querySelectorAll(".filter-btn");
+if (filterButtons && filterButtons.length) {
+  // Activer "Tout" par défaut
+  let defaultBtn = Array.from(filterButtons).find((b) => b.dataset.filter === "all") || filterButtons[0];
+  defaultBtn.classList.add("active");
+
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.dataset.filter || "all";
+      loadBD();
+    });
+  });
+}
+
+/* =========================================================
+   Import ISBN : Google Books (clé) → Open Library (fallback)
+   ========================================================= */
+const isbnInput = byId("isbnInput");
+const importBtn = byId("importIsbnBtn");
+const importHint = byId("importHint");
+
 async function importFromGoogleBooksByISBN(isbn) {
-  const apiKey = "AIzaSyA5B3tNy65krib-Y7DWpR1U01X1cOxMMiI"; // ➜ restreins par referrer (Google Books API) 
+  const apiKey = "AIzaSyA5B3tNy65krib-Y7DWpR1U01X1cOxMMiI"; // ⚠️ remplace par ta clé et restreins-la par referer
   const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}&maxResults=1&key=${apiKey}`;
   const r = await fetch(url);
   if (!r.ok) throw new Error("Requête Google Books en échec");
   const data = await r.json();
-  if (!data.items || data.items.length === 0) {
-    throw new Error("Aucun résultat Google Books");
-  }
+  if (!data.items || !data.items.length) throw new Error("Aucun résultat Google Books");
+
   const info = data.items[0].volumeInfo || {};
-  document.getElementById("titleInput").value  = info.title || "";
-  document.getElementById("authorInput").value = (info.authors || []).join(", ");
-  document.getElementById("artistInput").value = ""; // non distingué par Google Books
-  document.getElementById("editorInput").value = info.publisher || "";
-  document.getElementById("dateInput").value   = normalizeDate(info.publishedDate || "");
+  byId("titleInput").value  = info.title || "";
+  byId("authorInput").value = (info.authors || []).join(", ");
+  byId("artistInput").value = ""; // non distingué par Google
+  byId("editorInput").value = info.publisher || "";
+  byId("dateInput").value   = normalizeDate(info.publishedDate || "");
 
   importedCoverDataURL = "";
   const img = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail;
@@ -208,133 +329,61 @@ async function importFromGoogleBooksByISBN(isbn) {
     const httpsUrl = img.replace("http://", "https://").replace("&edge=curl", "");
     try { importedCoverDataURL = await urlToDataURL(httpsUrl); } catch {}
   }
-  return true;
 }
 
 async function importFromOpenLibraryByISBN(isbn) {
   importedCoverDataURL = "";
 
-  // Métadonnées basiques
+  // Métadonnées minimales
   try {
     const metaRes = await fetch(`https://openlibrary.org/isbn/${encodeURIComponent(isbn)}.json`);
     if (metaRes.ok) {
       const meta = await metaRes.json();
-      if (!document.getElementById("titleInput").value)  document.getElementById("titleInput").value = meta.title || "";
-      if (!document.getElementById("editorInput").value && Array.isArray(meta.publishers) && meta.publishers.length) {
-        document.getElementById("editorInput").value = meta.publishers[0];
+      if (!byId("titleInput").value)  byId("titleInput").value = meta.title || "";
+      if (!byId("editorInput").value && Array.isArray(meta.publishers) && meta.publishers.length) {
+        byId("editorInput").value = meta.publishers[0];
       }
-      if (!document.getElementById("dateInput").value)  document.getElementById("dateInput").value = normalizeDate(meta.publish_date || "");
+      if (!byId("dateInput").value)  byId("dateInput").value = normalizeDate(meta.publish_date || "");
     }
   } catch {}
 
-  // Couverture
+  // Couverture (S/M/L → on prend L)
   try {
     const coverUrl = `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(isbn)}-L.jpg?default=false`;
-    const test = await fetch(coverUrl, { method: "GET" });
-    if (test.ok) {
-      importedCoverDataURL = await urlToDataURL(coverUrl);
-    }
+    const res = await fetch(coverUrl, { method: "GET" });
+    if (res.ok) importedCoverDataURL = await urlToDataURL(coverUrl);
   } catch {}
 }
 
-document.getElementById("importIsbnBtn")?.addEventListener("click", async () => {
-  const isbn = (document.getElementById("isbnInput").value || "").replace(/[-\\s]/g, "");
-  if (!isbn) { alert("Saisis un ISBN (10 ou 13 chiffres)"); return; }
-  const hint = document.getElementById("importHint");
-  hint.textContent = "Import en cours…";
-
-  try {
-    try {
-      await importFromGoogleBooksByISBN(isbn); // 1) Google Books
-    } catch {
-      await importFromOpenLibraryByISBN(isbn); // 2) Fallback OL
+if (importBtn) {
+  importBtn.addEventListener("click", async () => {
+    const raw = (isbnInput?.value || "").trim();
+    const isbn = raw.replace(/[-\s]/g, "");
+    if (!isbn) {
+      alert("Saisis un ISBN (10 ou 13 chiffres).");
+      return;
     }
-    hint.textContent = importedCoverDataURL ? "Métadonnées importées. Couverture trouvée ✅" : "Métadonnées importées (couverture indisponible)";
-    // Ouvre directement le formulaire pour enchaîner
-    document.getElementById("modal").classList.remove("hidden");
-  } catch (e) {
-    hint.textContent = "Aucun résultat trouvé. Vérifie l'ISBN.";
-  }
-});
+    if (importHint) importHint.textContent = "Import en cours…";
 
-// =====================================
-// Enregistrement d'une nouvelle BD
-// =====================================
-document.getElementById("saveButton").onclick = async () => {
-  const file = document.getElementById("coverInput").files[0];
-
-  let cover = "";
-  if (file) {
-    cover = await toBase64(file);
-  } else if (importedCoverDataURL) {
-    cover = importedCoverDataURL;
-  }
-
-  const bd = {
-    title:  document.getElementById("titleInput").value,
-    author: document.getElementById("authorInput").value,
-    artist: document.getElementById("artistInput").value,
-    editor: document.getElementById("editorInput").value,
-    date:   document.getElementById("dateInput").value,
-    status: document.getElementById("statusInput").value,
-    cover
-  };
-
-  const editId = document.getElementById("modal").dataset.editId;
-
-  if (editId) {
-    // MODE MODIFICATION
-    bd.id = Number(editId);
-    const tx = db.transaction("bd", "readwrite");
-    tx.objectStore("bd").put(bd);
-    tx.oncomplete = () => {
-      delete document.getElementById("modal").dataset.editId;
-      loadBD();
-      resetForm();
-      document.getElementById("modal").classList.add("hidden");
-    };
-
-  } else {
-    // MODE CRÉATION
-    const tx = db.transaction("bd", "readwrite");
-    tx.objectStore("bd").add(bd);
-    tx.oncomplete = () => {
-      loadBD();
-      resetForm();
-      document.getElementById("modal").classList.add("hidden");
-    };
-  }
-};
-
-function resetForm() {
-  document.getElementById("titleInput").value = "";
-  document.getElementById("authorInput").value = "";
-  document.getElementById("artistInput").value = "";
-  document.getElementById("editorInput").value = "";
-  document.getElementById("dateInput").value = "";
-  document.getElementById("statusInput").value = "a_lire";
-  document.getElementById("coverInput").value = "";
-  document.getElementById("isbnInput").value = "";
-}
-
-function toBase64(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.readAsDataURL(file);
+    try {
+      try {
+        await importFromGoogleBooksByISBN(isbn); // 1) Google Books
+      } catch {
+        await importFromOpenLibraryByISBN(isbn); // 2) Fallback Open Library
+      }
+      if (importHint) {
+        importHint.textContent = importedCoverDataURL
+          ? "Métadonnées importées. Couverture trouvée ✅"
+          : "Métadonnées importées (pas de couverture disponible)";
+      }
+      // Ouvrir la modale pour compléter puis enregistrer
+      openModal();
+    } catch (e) {
+      if (importHint) importHint.textContent = "Aucun résultat trouvé. Vérifie l'ISBN.";
+    }
   });
 }
 
-let currentFilter = "all";
-
-document.querySelectorAll(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    // visuel
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    // logique
-    currentFilter = btn.dataset.filter;
-    loadBD();
-  });
-});
+/* =========================================================
+   Fin du fichier
+   ========================================================= */

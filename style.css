@@ -25,11 +25,12 @@
 }
 
 body.dark {
-  --bg: #0f1523;
+  --bg: #0e1014;
   --fg: #e5e7eb;
-  --card: #121a2b;
+  --card: #1b1e25;
   --muted: #94a3b8;
-  --border: #1f2a44;
+  --accent: #4de8ce;
+  --border: #393f4d;
   --shadow: 0 2px 14px rgba(0,0,0,.3);
   --switch-bg: var(--switch-bg-dark);
   --switch-active: #8aa0ff;
@@ -112,6 +113,19 @@ html, body {
   gap: 8px;
   flex-wrap: wrap;
 }
+
+
+.filter-bar .add-floating{
+  margin-left: auto;          /* clé pour “coller” à droite */
+  min-width: 40px;
+  aspect-ratio: 1/1;
+  border-radius: 999px;       /* joli bouton rond */
+  font-size: 1.2rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
 .filter-btn {
   padding: 6px 12px;
   border-radius: 8px;

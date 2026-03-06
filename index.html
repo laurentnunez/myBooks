@@ -21,7 +21,15 @@
 
     <div class="header-actions">
       <button id="themeToggle" class="btn secondary" title="Basculer clair/sombre">🌙</button>
-      <button id="addButton" class="btn primary">Ajouter une BD ➕</button>
+      <div class="view-toggle">
+      <!-- Toggle Liste / Grille (style iOS S1) -->
+      <span>Grille</span>
+      <label class="switch">
+        <input type="checkbox" id="viewModeToggle">
+        <span class="slider"></span>
+      </label>
+      <span>Liste</span>
+    </div>
     </div>
   </header>
 
@@ -31,21 +39,16 @@
     <!-- Filtres statut -->
     <div id="filterBar" class="filter-bar">
       <button class="filter-btn active" data-filter="all">Tout</button>
+      <button class="filter-btn" data-filter="collec">La Collec'</button>
       <button class="filter-btn" data-filter="a_lire">À lire</button>
       <button class="filter-btn" data-filter="lu">Lu</button>
-      <button class="filter-btn" data-filter="wishlist">Wishlist</button>
       <button class="filter-btn" data-filter="a_vendre">À vendre</button>
+      <button class="filter-btn" data-filter="wishlist">Wishlist</button>
+
+      <button id="addButton" class="btn primary add-floating">+</button>
     </div>
 
-    <!-- Toggle Liste / Grille (style iOS S1) -->
-    <div class="view-toggle">
-      <span>Grille</span>
-      <label class="switch">
-        <input type="checkbox" id="viewModeToggle">
-        <span class="slider"></span>
-      </label>
-      <span>Liste</span>
-    </div>
+    
 
   </section>
 

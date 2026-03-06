@@ -22,7 +22,8 @@ function systemPrefersDark() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
-let currentTheme = localStorage.getItem(THEME_KEY) || (systemPrefersDark() ? "dark" : "light");
+let currentTheme =
+  localStorage.getItem(THEME_KEY) || (systemPrefersDark() ? "dark" : "light");
 applyTheme(currentTheme);
 
 themeToggleBtn.addEventListener("click", () => {
@@ -52,9 +53,14 @@ request.onsuccess = (event) => {
 /* =========================================================
    Variables globales
    ========================================================= */
-let currentFilter = "all";
+// Filtre par défaut = "La Collec’" (À lire + Lu)
+let currentFilter = "collec";
+
+// Import ISBN dans la modale : Data URL de couverture (Option B)
 let importedCoverDataURL = "";
-let listMode = "grid"; // grille par défaut
+
+// Mode d’affichage : grille par défaut (switch iOS => non coché = grille)
+let listMode = "grid";
 
 const modalEl = document.getElementById("modal");
 const listEl = document.getElementById("bdList");
@@ -66,26 +72,13 @@ const viewModeToggle = document.getElementById("viewModeToggle");
 function byId(id) { return document.getElementById(id); }
 
 function escapeHTML(s) {
-  return (s || "").toString().replace(/[&<>"']/g, m => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
+  return (s || "").toString().replace(/[&<>"']/g, (m) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
   }[m]));
 }
 
-function formatStatus(code) {
-  return ({
-    a_lire: "À lire",
-    lu: "Lu",
-    wishlist: "Wishlist",
-    a_vendre: "À vendre"
-  })[code] || code;
-}
-
 function toBase64(file) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.readAsDataURL(file);
@@ -96,7 +89,7 @@ async function urlToDataURL(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Image introuvable");
   const blob = await res.blob();
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const r = new FileReader();
     r.onloadend = () => resolve(r.result);
     r.readAsDataURL(blob);
@@ -115,7 +108,7 @@ function normalizeDate(input) {
 }
 
 /* =========================================================
-   Rendu liste BD (avec tri + modes grille/liste)
+   Rendu liste BD (filtre + tri + modes grille/liste)
    ========================================================= */
 function loadBD() {
   const tx = db.transaction("bd", "readonly");
@@ -126,63 +119,76 @@ function loadBD() {
     let items = req.result || [];
 
     items = items
-      .filter(bd => currentFilter === "all" || bd.status === currentFilter)
-      .sort((a, b) => (a.title || "").localeCompare(b.title || "", "fr", { sensitivity: "base" }));
+      .filter((bd) => {
+        if (currentFilter === "collec") {
+          // La Collec' = À lire + Lu
+          return bd.status === "a_lire" || bd.status === "lu";
+        }
+        if (currentFilter === "all") return true;
+        return bd.status === currentFilter;
+      })
+      .sort((a, b) =>
+        (a.title || "").localeCompare(b.title || "", "fr", { sensitivity: "base" })
+      );
 
     listEl.innerHTML = "";
 
+    // Applique la classe du mode d’affichage
     listEl.classList.toggle("grid-mode", listMode === "grid");
     listEl.classList.toggle("list-mode", listMode === "list");
 
     items.forEach((bd) => {
       let html = "";
-      let wrapper = document.createElement("div");
+      const wrap = document.createElement("div");
 
-      /* ==========================
-         MODE GRILLE
-      ========================== */
       if (listMode === "grid") {
-        wrapper.className = "bd-card-grid";
+        // ===== Mode Grille : cover + titre + actions
+        wrap.className = "bd-card-grid";
         html = `
-          <img src="${escapeHTML(bd.cover || "")}" alt="Couverture" />
-          <div class="bd-card-title">${escapeHTML(bd.title)}</div>
+          ${bd.cover
+            ? `<img src="${escapeHTML(bd.cover)}" alt="Couverture de ${escapeHTML(bd.title || "")}" loading="lazy">`
+            : `<div class="bd-cover" aria-label="Pas de couverture"></div>`}
+          <div class="bd-card-title">${escapeHTML(bd.title || "")}</div>
           <div class="bd-card-actions">
-            <button class="btn" onclick="editBD(${bd.id})">✏️</button>
-            <button class="btn" onclick="deleteBD(${bd.id})">🗑️</button>
+            <button class="btn" title="Modifier" onclick="editBD(${bd.id})">✏️</button>
+            <button class="btn" title="Supprimer" onclick="deleteBD(${bd.id})">🗑️</button>
           </div>
         `;
-
-      /* ==========================
-         MODE LISTE (L3)
-      ========================== */
       } else {
-        wrapper.className = "bd-card-list";
+        // ===== Mode Liste (L3) : cover + (titre + auteur) + actions
+        wrap.className = "bd-card-list";
         html = `
-          <img src="${escapeHTML(bd.cover || "")}" alt="Couverture" />
+          ${bd.cover
+            ? `<img src="${escapeHTML(bd.cover)}" alt="Couverture de ${escapeHTML(bd.title || "")}" loading="lazy">`
+            : `<div class="bd-cover" aria-label="Pas de couverture"></div>`}
           <div class="info">
-            <div class="bd-card-title">${escapeHTML(bd.title)}</div>
+            <div class="bd-card-title">${escapeHTML(bd.title || "")}</div>
             <div class="author">${escapeHTML(bd.author || "")}</div>
           </div>
           <div class="bd-card-actions">
-            <button class="btn" onclick="editBD(${bd.id})">✏️</button>
-            <button class="btn" onclick="deleteBD(${bd.id})">🗑️</button>
+            <button class="btn" title="Modifier" onclick="editBD(${bd.id})">✏️</button>
+            <button class="btn" title="Supprimer" onclick="deleteBD(${bd.id})">🗑️</button>
           </div>
         `;
       }
 
-      wrapper.innerHTML = html;
-      listEl.appendChild(wrapper);
+      wrap.innerHTML = html;
+      listEl.appendChild(wrap);
     });
   };
 }
 
 /* =========================================================
-   Toggle Grille ↔ Liste
+   Toggle Grille ↔ Liste (switch iOS)
    ========================================================= */
-viewModeToggle.addEventListener("change", () => {
-  listMode = viewModeToggle.checked ? "list" : "grid";
-  loadBD();
-});
+if (viewModeToggle) {
+  // Par défaut non coché => grille
+  viewModeToggle.checked = (listMode === "list");
+  viewModeToggle.addEventListener("change", () => {
+    listMode = viewModeToggle.checked ? "list" : "grid";
+    loadBD();
+  });
+}
 
 /* =========================================================
    CRUD
@@ -202,15 +208,15 @@ function editBD(id) {
     const bd = req.result;
     if (!bd) return;
 
-    byId("titleInput").value = bd.title;
-    byId("authorInput").value = bd.author;
-    byId("artistInput").value = bd.artist;
-    byId("editorInput").value = bd.editor;
-    byId("dateInput").value = bd.date;
-    byId("statusInput").value = bd.status;
+    byId("titleInput").value  = bd.title  || "";
+    byId("authorInput").value = bd.author || "";
+    byId("artistInput").value = bd.artist || "";
+    byId("editorInput").value = bd.editor || "";
+    byId("dateInput").value   = bd.date   || "";
+    byId("statusInput").value = bd.status || "a_lire";
 
     importedCoverDataURL = bd.cover || "";
-    modalEl.dataset.editId = id;
+    modalEl.dataset.editId = String(id);
 
     openModal();
   };
@@ -222,9 +228,11 @@ window.editBD = editBD;
    ========================================================= */
 function openModal() {
   modalEl.classList.remove("hidden");
+  modalEl.setAttribute("aria-hidden", "false");
 }
 function closeModal() {
   modalEl.classList.add("hidden");
+  modalEl.setAttribute("aria-hidden", "true");
   delete modalEl.dataset.editId;
 }
 
@@ -232,18 +240,18 @@ byId("addButton").onclick = () => openModal();
 byId("cancelButton").onclick = () => { resetForm(); closeModal(); };
 
 /* =========================================================
-   Enregistrer BD (Ajouter + Modifier)
+   Enregistrer BD (Créer / Modifier)
    ========================================================= */
 byId("saveButton").onclick = async () => {
   const file = byId("coverInput").files[0];
   let cover = file ? await toBase64(file) : importedCoverDataURL;
 
   const bd = {
-    title: byId("titleInput").value,
+    title:  byId("titleInput").value,
     author: byId("authorInput").value,
     artist: byId("artistInput").value,
     editor: byId("editorInput").value,
-    date: byId("dateInput").value,
+    date:   byId("dateInput").value,
     status: byId("statusInput").value,
     cover
   };
@@ -263,28 +271,44 @@ byId("saveButton").onclick = async () => {
 };
 
 /* =========================================================
-   Reset
+   Reset formulaire
    ========================================================= */
 function resetForm() {
-  ["titleInput","authorInput","artistInput","editorInput","dateInput","isbnInputModal"]
-    .forEach(id => { if (byId(id)) byId(id).value = ""; });
+  ["titleInput","authorInput","artistInput","editorInput","dateInput","isbnInputModal"].forEach((id) => {
+    const el = byId(id);
+    if (el) el.value = "";
+  });
+  const statusEl = byId("statusInput");
+  if (statusEl) statusEl.value = "a_lire";
+
+  const fileEl = byId("coverInput");
+  if (fileEl) fileEl.value = "";
 
   importedCoverDataURL = "";
-  byId("coverInput").value = "";
-  byId("statusInput").value = "a_lire";
 }
 
 /* =========================================================
-   Filtres statut
+   Filtres par statut (incl. "La Collec'")
    ========================================================= */
-document.querySelectorAll(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    currentFilter = btn.dataset.filter;
-    loadBD();
+const filterButtons = document.querySelectorAll(".filter-btn");
+if (filterButtons && filterButtons.length) {
+  // Activer visuellement "La Collec’" par défaut si présent
+  const defaultBtn =
+    Array.from(filterButtons).find((b) => b.dataset.filter === "collec") ||
+    filterButtons[0];
+
+  filterButtons.forEach((b) => b.classList.remove("active"));
+  defaultBtn.classList.add("active");
+
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.dataset.filter || "collec";
+      loadBD();
+    });
   });
-});
+}
 
 /* =========================================================
    Import ISBN (dans la modale)
@@ -294,66 +318,78 @@ const importBtn = byId("importIsbnBtnModal");
 const importHint = byId("importHintModal");
 
 async function importFromGoogleBooks(isbn) {
-  const apiKey = "AIzaSyA5B3tNy65krib-Y7DWpR1U01X1cOxMMiI";
-  const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${apiKey}`;
+  const apiKey = "COLLE_TA_CLE_API_ICI"; // restreins par HTTP referrer à ton GitHub Pages
+  const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${encodeURIComponent(isbn)}&maxResults=1&key=${apiKey}`;
 
   const r = await fetch(url);
-  if (!r.ok) throw new Error();
+  if (!r.ok) throw new Error("Google Books KO");
   const data = await r.json();
-  if (!data.items || !data.items.length) throw new Error();
+  if (!data.items || !data.items.length) throw new Error("Aucun résultat Google Books");
 
-  const info = data.items[0].volumeInfo;
-  byId("titleInput").value = info.title || "";
+  const info = data.items[0].volumeInfo || {};
+  byId("titleInput").value  = info.title || "";
   byId("authorInput").value = (info.authors || []).join(", ");
   byId("editorInput").value = info.publisher || "";
-  byId("dateInput").value = normalizeDate(info.publishedDate || "");
+  byId("dateInput").value   = normalizeDate(info.publishedDate || "");
 
-  const img = info.imageLinks?.thumbnail;
-  importedCoverDataURL = img ? await urlToDataURL(img.replace("http://","https://")) : "";
+  importedCoverDataURL = "";
+  const img = info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail;
+  if (img) {
+    try { importedCoverDataURL = await urlToDataURL(img.replace("http://","https://")); } catch {}
+  }
 }
 
 async function importFromOpenLibrary(isbn) {
   importedCoverDataURL = "";
 
+  // Métadonnées minimales
   try {
-    const r = await fetch(`https://openlibrary.org/isbn/${isbn}.json`);
-    if (r.ok) {
-      const meta = await r.json();
+    const res = await fetch(`https://openlibrary.org/isbn/${encodeURIComponent(isbn)}.json`);
+    if (res.ok) {
+      const meta = await res.json();
       if (!byId("titleInput").value)  byId("titleInput").value  = meta.title || "";
-      if (!byId("editorInput").value) byId("editorInput").value = (meta.publishers || [""])[0];
+      if (!byId("editorInput").value && Array.isArray(meta.publishers) && meta.publishers.length) {
+        byId("editorInput").value = meta.publishers[0];
+      }
       if (!byId("dateInput").value)   byId("dateInput").value   = normalizeDate(meta.publish_date || "");
     }
   } catch {}
 
+  // Couverture
   try {
-    const coverUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`;
-    const t = await fetch(coverUrl);
-    if (t.ok) importedCoverDataURL = await urlToDataURL(coverUrl);
+    const coverUrl = `https://covers.openlibrary.org/b/isbn/${encodeURIComponent(isbn)}-L.jpg?default=false`;
+    const test = await fetch(coverUrl);
+    if (test.ok) importedCoverDataURL = await urlToDataURL(coverUrl);
   } catch {}
 }
 
-importBtn.addEventListener("click", async () => {
-  const isbn = isbnInput.value.replace(/[-\s]/g,"");
-
-  if (!isbn) {
-    alert("Saisis un ISBN.");
-    return;
-  }
-
-  importHint.textContent = "Import en cours…";
-
-  try {
-    try {
-      await importFromGoogleBooks(isbn);
-    } catch {
-      await importFromOpenLibrary(isbn);
+if (importBtn) {
+  importBtn.addEventListener("click", async () => {
+    const raw  = (isbnInput?.value || "").trim();
+    const isbn = raw.replace(/[-\s]/g, "");
+    if (!isbn) {
+      alert("Saisis un ISBN (10 ou 13 chiffres).");
+      return;
     }
 
-    importHint.textContent = importedCoverDataURL
-      ? "Données récupérées + couverture trouvée ✔️"
-      : "Données récupérées (pas de couverture)";
+    importHint.textContent = "Import en cours…";
 
-  } catch {
-    importHint.textContent = "Aucun résultat trouvé.";
-  }
-});
+    try {
+      try {
+        await importFromGoogleBooks(isbn);
+      } catch {
+        await importFromOpenLibrary(isbn);
+      }
+
+      importHint.textContent = importedCoverDataURL
+        ? "Données récupérées + couverture trouvée ✔️"
+        : "Données récupérées (pas de couverture)";
+    } catch {
+      importHint.textContent = "Aucun résultat trouvé.";
+    }
+  });
+}
+
+/* =========================================================
+   FIN
+   ========================================================= */

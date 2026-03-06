@@ -2,15 +2,16 @@
    VARIABLES (THEME CLAIR / SOMBRE)
    ========================================================= */
 :root {
-  --bg: #f5f6fb;
-  --fg: #111827;
-  --card: #ffffff;
-  --muted: #6b7280;
-  --primary: #3e4a89;
-  --primary-contrast: #ffffff;
-  --accent: #00b894;
-  --border: #e5e7eb;
-  --shadow: 0 2px 10px rgba(0,0,0,.06);
+  :root {
+  --bg: #0b1412;
+  --fg: #dfeee8;
+  --card: #13201d;
+  --muted: #88a39b;
+  --primary: #2dd4bf;   /* turquoise pastel */
+  --primary-contrast: #03221d;
+  --accent: #4de8ce;
+  --border: #1d2e2a;
+}
 
   /* Cover */
   --cover-ratio: 3/4;

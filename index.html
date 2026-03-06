@@ -12,45 +12,67 @@
   <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+
   <!-- En-tête -->
   <header class="app-header">
     <h1>📚 Ma Collection BD</h1>
+
     <div class="header-actions">
       <button id="themeToggle" class="btn secondary" title="Basculer clair/sombre">🌙</button>
       <button id="addButton" class="btn primary">Ajouter une BD ➕</button>
     </div>
   </header>
 
-  <!-- Import ISBN -->
-  <section id="importBar" class="import-bar">
-    <input
-      id="isbnInput"
-      inputmode="numeric"
-      pattern="[0-9Xx\- ]*"
-      placeholder="ISBN (10 ou 13 chiffres)"
-      aria-label="Saisir un ISBN (10 ou 13 chiffres)"
-    />
-    <button id="importIsbnBtn" class="btn">Importer via ISBN</button>
-    <small id="importHint" class="hint">Essaie d’abord Google Books, puis Open Library</small>
+  <!-- Zone Filtres + Toggle Grille/Liste -->
+  <section id="filtersArea" class="filters-area">
+
+    <!-- Filtres statut -->
+    <div id="filterBar" class="filter-bar">
+      <button class="filter-btn active" data-filter="all">Tout</button>
+      <button class="filter-btn" data-filter="a_lire">À lire</button>
+      <button class="filter-btn" data-filter="lu">Lu</button>
+      <button class="filter-btn" data-filter="wishlist">Wishlist</button>
+      <button class="filter-btn" data-filter="a_vendre">À vendre</button>
+    </div>
+
+    <!-- Toggle Liste / Grille (style iOS S1) -->
+    <div class="view-toggle">
+      <span>Grille</span>
+      <label class="switch">
+        <input type="checkbox" id="viewModeToggle">
+        <span class="slider"></span>
+      </label>
+      <span>Liste</span>
+    </div>
+
   </section>
 
-  <!-- Filtres par statut -->
-  <section id="filterBar" class="filter-bar" aria-label="Filtrer par statut">
-    <button class="filter-btn active" data-filter="all">Tout</button>
-    <button class="filter-btn" data-filter="a_lire">À lire</button>
-    <button class="filter-btn" data-filter="lu">Lu</button>
-    <button class="filter-btn" data-filter="wishlist">Wishlist</button>
-    <button class="filter-btn" data-filter="a_vendre">À vendre</button>
-  </section>
+  <!-- Liste des BD -->
+  <section id="bdList" class="bd-list grid-mode" aria-live="polite" aria-label="Liste des BD"></section>
 
-  <!-- Liste des BD (grille) -->
-  <section id="bdList" class="bd-list" aria-live="polite" aria-label="Liste des BD"></section>
-
-  <!-- Modale d’ajout / modification (cachée par défaut) -->
+  <!-- Modale d’ajout / modification -->
   <div id="modal" class="modal hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-content">
+
       <h2 id="modalTitle">Ajouter / Modifier une BD</h2>
+
+      <!-- Import ISBN déplacé ici -->
+      <div class="isbn-zone">
+        <label for="isbnInputModal">Importer via ISBN :</label>
+        <div class="isbn-row">
+          <input
+            id="isbnInputModal"
+            inputmode="numeric"
+            pattern="[0-9Xx\- ]*"
+            placeholder="ISBN (10 ou 13 chiffres)"
+            aria-label="Saisir un ISBN"
+          />
+          <button id="importIsbnBtnModal" class="btn">Importer</button>
+        </div>
+        <small id="importHintModal" class="hint">Google Books → Open Library</small>
+      </div>
 
       <div class="form-grid">
         <input id="titleInput" placeholder="Titre" aria-label="Titre" />
@@ -75,6 +97,7 @@
         <button id="saveButton" class="btn primary">Enregistrer</button>
         <button id="cancelButton" class="btn">Annuler</button>
       </div>
+
     </div>
   </div>
 
@@ -82,5 +105,6 @@
 
   <!-- App -->
   <script src="app.js" defer></script>
+
 </body>
 </html>

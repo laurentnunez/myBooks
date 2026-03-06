@@ -1,7 +1,7 @@
 /* =========================================================
-   VARIABLES (Thème clair/sombre + tailles cover)
+   VARIABLES (THEME CLAIR / SOMBRE)
    ========================================================= */
-:root{
+:root {
   --bg: #f5f6fb;
   --fg: #111827;
   --card: #ffffff;
@@ -12,179 +12,163 @@
   --border: #e5e7eb;
   --shadow: 0 2px 10px rgba(0,0,0,.06);
 
-  /* Grille & cover */
+  /* Cover */
   --cover-ratio: 3/4;
+  --cover-w: 100%;
   --gap: 12px;
+
+  /* Switch Liste/Grille */
+  --switch-bg: #cfd3e0;
+  --switch-bg-dark: #334155;
+  --switch-active: #3e4a89;
 }
 
-body.dark{
+body.dark {
   --bg: #0f1523;
   --fg: #e5e7eb;
   --card: #121a2b;
   --muted: #94a3b8;
-  --primary: #8aa0ff;
-  --primary-contrast: #0b1020;
-  --accent: #43d3b5;
   --border: #1f2a44;
   --shadow: 0 2px 14px rgba(0,0,0,.3);
+  --switch-bg: var(--switch-bg-dark);
+  --switch-active: #8aa0ff;
 }
 
 /* =========================================================
    BASE
    ========================================================= */
-*{ box-sizing: border-box; }
-html, body{
+* { box-sizing: border-box; }
+html, body {
   margin: 0;
   height: 100%;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
   background: var(--bg);
   color: var(--fg);
 }
-
-.hidden{ display:none !important; }
+.hidden { display: none !important; }
 
 /* =========================================================
    HEADER
    ========================================================= */
-.app-header{
-  display:flex; align-items:center; justify-content:space-between;
+.app-header {
   background: var(--primary);
   color: var(--primary-contrast);
   padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-.app-header h1{ margin:0; font-size:1.2rem; }
-.header-actions{ display:flex; gap:8px; align-items:center; }
+.app-header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
 
 /* =========================================================
    BOUTONS
    ========================================================= */
-.btn{
-  padding:8px 12px;
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  cursor: pointer;
+  transition: .15s;
+  box-shadow: var(--shadow);
+}
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
+}
+.btn.secondary {
+  background: var(--card);
+}
+.btn:hover {
+  filter: brightness(1.07);
+}
+
+/* =========================================================
+   ZONE FILTRES + TOGGLE
+   ========================================================= */
+.filters-area {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* -------------------
+   FILTRES STATUT
+---------------------*/
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
   background: var(--card);
   color: var(--fg);
-  border:1px solid var(--border);
-  border-radius:8px;
-  cursor:pointer;
-  box-shadow: var(--shadow);
-  transition: .15s ease;
+  cursor: pointer;
 }
-.btn.primary{ background: var(--accent); color: #fff; border-color: transparent; }
-.btn.secondary{ background: var(--card); }
-.btn:hover{ filter: brightness(1.05); }
-
-/* =========================================================
-   IMPORT ISBN
-   ========================================================= */
-.import-bar{
-  display:flex; gap:8px; padding:12px; flex-wrap:wrap;
-}
-#importBar input{
-  flex:1 1 auto;
-  padding:10px; border-radius:8px; border:1px solid var(--border);
-  background: var(--card); color: var(--fg);
-}
-.hint{ color: var(--muted); }
-
-/* =========================================================
-   FILTRES
-   ========================================================= */
-.filter-bar{
-  display:flex; gap:8px; padding:10px 12px; flex-wrap:wrap;
-}
-.filter-btn{
-  padding:6px 12px; border-radius:8px; cursor:pointer;
-  background: var(--card); color: var(--fg); border:1px solid var(--border);
-}
-.filter-btn.active{ background: var(--accent); color:#fff; border-color: transparent; }
-
-/* =========================================================
-   LISTE — MODE GRILLE (3 colonnes mobiles)
-   ========================================================= */
-.bd-list{
-  padding:12px;
-  display:grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 colonnes en mobile (demandé) */
-  gap:14px;
+.filter-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: transparent;
 }
 
-/* Carte compacte : cover + titre + actions */
-.bd-card-grid{
-  background: var(--card);
-  border:1px solid var(--border);
-  border-radius:10px;
-  box-shadow: var(--shadow);
-  padding:10px;
-  text-align:center;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+/* -------------------
+   TOGGLE LISTE / GRILLE — switch S1
+---------------------*/
+.view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
 }
 
-/* Cover */
-.bd-cover{
-  width: 100%;
-  height: auto;
-  aspect-ratio: var(--cover-ratio);
-  object-fit: cover;
-  border-radius: 8px;
-  background: #ddd;
+/* Switch iOS */
+.switch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  display: inline-block;
 }
-.bd-cover.placeholder{
-  display:block;
+.switch input {
+  display: none;
 }
-
-/* Titre */
-.bd-card-title{
-  font-weight: 600;
-  font-size: .95rem;
-  line-height: 1.2;
-  min-height: 2.6em; /* stabilise la hauteur selon longueur du titre */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--switch-bg);
+  border-radius: 34px;
+  transition: .3s;
 }
-
-/* Actions */
-.bd-card-actions{
-  display:flex;
-  justify-content:center;
-  gap:8px;
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .3s;
+}
+.switch input:checked + .slider {
+  background: var(--switch-active);
+}
+.switch input:checked + .slider:before {
+  transform: translateX(18px);
 }
 
 /* =========================================================
-   MODALE
-   ========================================================= */
-.modal{
-  position:fixed; inset:0; z-index:999;
-  background: rgba(0,0,0,.6);
-  display:flex; align-items:center; justify-content:center;
-  padding:14px;
-}
-.modal-content{
-  width:min(90%, 650px);
-  background: var(--card); color: var(--fg);
-  border-radius:12px; padding:18px; box-shadow: var(--shadow);
-}
-.modal-content h2{ margin-top:0; }
-.modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:12px; }
-
-/* Formulaire */
-.form-grid{
-  display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;
-}
-.form-grid input, .form-grid select{
-  padding:10px; border:1px solid var(--border); border-radius:8px;
-  background: var(--bg); color: var(--fg);
-}
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
-/* Plus d’espace = davantage de colonnes */
-@media (min-width: 900px){
-  .bd-list{ grid-template-columns: repeat(6, 1fr); }
-}
-@media (max-width: 420px){
-  /* Si c'est trop serré, passe à 2 colonnes très petites */
-  .bd-list{ grid-template-columns: repeat(3, 1fr); } /* tu peux mettre 2 ici si besoin */
-}
-@media (max-width: 600px){
-  .form-grid{ grid-template-columns: 1fr; }
-}

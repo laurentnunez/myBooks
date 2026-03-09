@@ -199,7 +199,7 @@ html, body {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  z-index: 999;
+  z-index: 99999;
 }
 .modal-content {
   width: min(90%, 650px);
@@ -248,4 +248,45 @@ html, body {
 @media (max-width: 600px) {
   .form-grid { grid-template-columns: 1fr; }
   .bd-card-list { grid-template-columns: 70px 1fr auto; }
+}
+
+/* ===========================
+   Floating Action Button (FAB)
+   =========================== */
+#addButton {
+  position: fixed;               /* Toujours visible à l'écran */
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: 50px;
+  height: 50px;
+  border-radius: 999px;
+  padding: 0;                    /* le rond ne doit pas gonfler */
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;             /* le “+” */
+  line-height: 1;
+  z-index: 9999;                 /* au-dessus de la liste */
+  box-shadow: 0 8px 24px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+  border: none;                  /* on masque la bordure pour un look FAB */
+  background: var(--accent);
+  color: #000;                   /* bon contraste sur l’accent turquoise */
+  cursor: pointer;
+}
+
+#addButton:hover {
+  filter: brightness(1.07);
+}
+
+/* Option : légère animation au press pour feedback */
+#addButton:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Évite que le FAB ne masque le contenu en bas de liste */
+body {
+  padding-bottom: 88px; /* ~56px FAB + marge visuelle, ajuste au besoin */
 }

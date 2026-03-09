@@ -32,10 +32,11 @@ let currentFilter = "collec";
 let importedCoverDataURL = "";
 let listMode = "grid";
 
-const modalEl = document.getElementById("modal");
+const modalEl       = document.getElementById("modal");
 const detailModalEl = document.getElementById("detailModal");
-const listEl = document.getElementById("bdList");
-const viewModeToggle = document.getElementById("viewModeToggle");
+const listEl        = document.getElementById("bdList");
+const viewModeToggle= document.getElementById("viewModeToggle");
+const addButton     = document.getElementById("addButton");
 
 /* =========================================================
    Utilitaires
@@ -44,11 +45,7 @@ function byId(id) { return document.getElementById(id); }
 
 function escapeHTML(s) {
   return (s ?? "").replace(/[&<>\"']/g, (m) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[m]));
 }
 
@@ -70,11 +67,10 @@ function loadBD() {
   store.getAll().onsuccess = (e) => {
     let items = e.target.result ?? [];
 
-    // Filtre
+    // Filtre La Collec'
     items = items.filter((bd) => {
-      if (currentFilter === "collec") {
+      if (currentFilter === "collec")
         return bd.status === "a_lire" || bd.status === "lu";
-      }
       return bd.status === currentFilter;
     });
 
@@ -93,7 +89,7 @@ function loadBD() {
       const wrap = document.createElement("div");
 
       const coverHtml = bd.cover
-        ? `<img src="${escapeHTML(bd.cover)}" loading="lazy">`
+        ? `<img src="${escapeHTML(bd.cover)}" alt="Couverture" class="bd-cover-img">`
         : `<div class="bd-cover"></div>`;
 
       if (listMode === "grid") {
@@ -103,6 +99,7 @@ function loadBD() {
           <div class="bd-card-title">${escapeHTML(bd.title)}</div>
           <div class="author">${escapeHTML(bd.author)}</div>
           <div class="author">${escapeHTML(bd.artist)}</div>
+
           <div class="bd-card-actions">
             <button class="btn" onclick="event.stopPropagation(); editBD(${bd.id})">✏️</button>
             <button class="btn" onclick="event.stopPropagation(); deleteBD(${bd.id})">🗑️</button>
@@ -116,8 +113,8 @@ function loadBD() {
             <div class="bd-card-title">${escapeHTML(bd.title)}</div>
             <div class="author">${escapeHTML(bd.author)}</div>
             <div class="author">${escapeHTML(bd.artist)}</div>
-            <div class="editor">${escapeHTML(bd.editor)} | ${escapeHTML(bd.date)}</div>
           </div>
+
           <div class="bd-card-actions">
             <button class="btn" onclick="event.stopPropagation(); editBD(${bd.id})">✏️</button>
             <button class="btn" onclick="event.stopPropagation(); deleteBD(${bd.id})">🗑️</button>
@@ -125,16 +122,14 @@ function loadBD() {
         `;
       }
 
-      // ➜ Click card → ouvre la fiche détaillée
       wrap.onclick = () => openDetail(bd);
-
       listEl.appendChild(wrap);
     });
   };
 }
 
 /* =========================================================
-   Toggle grille / liste
+   Toggle Grille / Liste
 ========================================================= */
 if (viewModeToggle) {
   viewModeToggle.checked = listMode === "list";
@@ -160,12 +155,12 @@ function editBD(id) {
     const bd = e.target.result;
     if (!bd) return;
 
-    byId("titleInput").value = bd.title ?? "";
-    byId("authorInput").value = bd.author ?? "";
-    byId("artistInput").value = bd.artist ?? "";
-    byId("editorInput").value = bd.editor ?? "";
-    byId("dateInput").value = bd.date ?? "";
-    byId("statusInput").value = bd.status ?? "a_lire";
+    byId("titleInput").value    = bd.title    ?? "";
+    byId("authorInput").value   = bd.author   ?? "";
+    byId("artistInput").value   = bd.artist   ?? "";
+    byId("editorInput").value   = bd.editor   ?? "";
+    byId("dateInput").value     = bd.date     ?? "";
+    byId("statusInput").value   = bd.status   ?? "a_lire";
     byId("synopsisInput").value = bd.synopsis ?? "";
 
     importedCoverDataURL = bd.cover ?? "";
@@ -177,18 +172,21 @@ function editBD(id) {
 window.editBD = editBD;
 
 /* =========================================================
-   Modale Ajout/Édition
+   Modale Ajout / Edition
 ========================================================= */
 function openModal() {
   modalEl.classList.remove("hidden");
+  addButton.classList.add("hidden");
 }
 
 function closeModal() {
   modalEl.classList.add("hidden");
+  addButton.classList.remove("hidden");
   delete modalEl.dataset.editId;
 }
 
-byId("addButton").onclick = () => openModal();
+addButton.onclick = () => openModal();
+
 byId("cancelButton").onclick = () => {
   resetForm();
   closeModal();
@@ -198,23 +196,23 @@ byId("cancelButton").onclick = () => {
    Enregistrer BD
 ========================================================= */
 byId("saveButton").onclick = async () => {
-  const file = byId("coverInput").files?.[0];
+  const file  = byId("coverInput").files?.[0];
   const cover = file ? await toBase64(file) : importedCoverDataURL;
 
   const bd = {
-    title: byId("titleInput").value,
-    author: byId("authorInput").value,
-    artist: byId("artistInput").value,
-    editor: byId("editorInput").value,
-    date: byId("dateInput").value,
-    status: byId("statusInput").value,
+    title:    byId("titleInput").value,
+    author:   byId("authorInput").value,
+    artist:   byId("artistInput").value,
+    editor:   byId("editorInput").value,
+    date:     byId("dateInput").value,
+    status:   byId("statusInput").value,
     cover,
     synopsis: byId("synopsisInput").value
   };
 
   const editId = modalEl.dataset.editId;
-  const tx = db.transaction("bd", "readwrite");
-  const store = tx.objectStore("bd");
+  const tx     = db.transaction("bd", "readwrite");
+  const store  = tx.objectStore("bd");
 
   if (editId) {
     bd.id = Number(editId);
@@ -241,10 +239,10 @@ function resetForm() {
     "editorInput",
     "dateInput",
     "synopsisInput"
-  ].forEach((id) => byId(id).value = "");
+  ].forEach((id) => { const el = byId(id); if (el) el.value = ""; });
 
   byId("statusInput").value = "a_lire";
-  byId("coverInput").value = "";
+  byId("coverInput").value  = "";
 
   importedCoverDataURL = "";
 }
@@ -256,24 +254,33 @@ document.querySelectorAll(".filter-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filter-btn")
       .forEach((b) => b.classList.remove("active"));
-
     btn.classList.add("active");
+
     currentFilter = btn.dataset.filter;
     loadBD();
   });
 });
 
+// Initialisation du filtre "La Collec'"
+currentFilter = "collec";
+const collectBtn = document.querySelector('[data-filter="collec"]');
+if (collectBtn) {
+  document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+  collectBtn.classList.add("active");
+}
+loadBD();
+
 /* =========================================================
-   FICHE DÉTAILLÉE
+   Fiche Détail
 ========================================================= */
 function openDetail(bd) {
-  byId("detailTitle").textContent = bd.title ?? "";
-  byId("detailAuthor").textContent = bd.author ?? "";
-  byId("detailArtist").textContent = bd.artist ?? "";
-  byId("detailEditor").textContent = bd.editor ?? "";
-  byId("detailDate").textContent = bd.date ?? "";
+  byId("detailTitle").textContent    = bd.title    ?? "";
+  byId;
+  byId("detailArtist").textContent   = bd.artist   ?? "";
+  byId("detailEditor").textContent   = bd.editor   ?? "";
+  byId("detailDate").textContent     = bd.date     ?? "";
   byId("detailSynopsis").textContent = bd.synopsis ?? "";
-  byId("detailCover").src = bd.cover ?? "";
+  byId("detailCover").src            = bd.cover    ?? "";
 
   detailModalEl.classList.remove("hidden");
 }

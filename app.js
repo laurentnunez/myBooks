@@ -301,9 +301,9 @@ function openDetail(bd) {
 }
 
 // Empêche la ré-ouverture immédiate (clic dans la modale ≠ clic sur BOS)
-//document.querySelector(".modal-content.detail").addEventListener("click", (e) => {
-  //e.stopPropagation();
-//});
+document.querySelector(".modal-content.detail").addEventListener("click", (e) => {
+e.stopPropagation();
+});
 
 function closeDetail(){
   detailModalEl.classList.add("hidden");
@@ -311,10 +311,13 @@ function closeDetail(){
 }
 
 // Bouton FERMER (fonctionnel maintenant)
-byId("detailClose").onclick = () => {
-  console.log("[detailClose] clic détecté");
-  closeDetail();
-};
+window.addEventListener("DOMContentLoaded", () => {
+    byId("detailClose").onclick = () => {
+        console.log("[detailClose] clic détecté");
+        closeDetail();
+    };
+});
+
 
 
 

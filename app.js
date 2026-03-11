@@ -284,40 +284,5 @@ if (collectBtn) {
 }
 loadBD();
 
-/* =========================================================
-   FICHE DÉTAILLÉE — CORRIGÉE
-========================================================= */
-function openDetail(bd) {
-  byId("detailTitle").textContent    = bd.title    ?? "";
-  byId("detailAuthor").textContent   = bd.author   ?? "";
-  byId("detailArtist").textContent   = bd.artist   ?? "";
-  byId("detailEditor").textContent   = bd.editor   ?? "";
-  byId("detailDate").textContent     = bd.date     ?? "";
-  byId("detailSynopsis").textContent = bd.synopsis ?? "";
-  byId("detailCover").src            = bd.cover    ?? "";
-
-  detailModalEl.classList.remove("hidden");
-  addButton.classList.add("hidden");
-}
-
-// Empêche la ré-ouverture immédiate (clic dans la modale ≠ clic sur BOS)
-document.querySelector(".modal-content.detail").addEventListener("click", (e) => {
-e.stopPropagation();
-});
-
-function closeDetail(){
-  detailModalEl.classList.add("hidden");
-  addButton.classList.remove("hidden");
-}
-
-// Bouton FERMER (fonctionnel maintenant)
-window.addEventListener("DOMContentLoaded", () => {
-    byId("detailClose").onclick = () => {
-        console.log("[detailClose] clic détecté");
-        closeDetail();
-    };
-});
-
-
 
 

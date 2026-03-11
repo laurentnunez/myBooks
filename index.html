@@ -42,6 +42,7 @@
       <button class="filter-btn" data-filter="a_vendre">À vendre</button>
       <button class="filter-btn" data-filter="wishlist">Wishlist</button>
     </div>
+    <button id="addButton" class="btn primary add-floating" aria-label="Ajouter une BD">+</button>
   </section>
 
   <!-- Liste des BD -->
@@ -82,32 +83,7 @@
       </div>
     </div>
   </div>
-
-  <!-- Modale de détail -->
-  <div id="detailModal" class="modal hidden">
-    <div class="modal-content detail">
-      <h2 id="detailTitle"></h2>
-
-      <img id="detailCover" class="detail-cover" alt="Couverture" />
-
-      <p><strong>Auteur :</strong> <span id="detailAuthor"></span></p>
-      <p><strong>Dessinateur :</strong> <span id="detailArtist"></span></p>
-      <p><strong>Éditeur :</strong> <span id="detailEditor"></span></p>
-      <p><strong>Date de parution :</strong> <span id="detailDate"></span></p>
-
-      <h3>Synopsis</h3>
-      <p id="detailSynopsis"></p>
-      
-      <div class="modal-actions">
-        <button id="detailClose" class="btn">Fermer</button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- FAB + -->
-  <button id="addButton" class="btn primary add-floating" aria-label="Ajouter une BD">+</button>
-
+    
   <!-- JS -->
   <script src="app.js"></script>
 </body>

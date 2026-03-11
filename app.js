@@ -167,6 +167,12 @@ function loadBD() {
         : `<div class="bd-cover"></div>`;
 
 
+        const year = (bd.date ?? "").slice(0, 4);
+        const editorYear =
+          bd.editor && year ? `${escapeHTML(bd.editor)} • ${escapeHTML(year)}`
+          : bd.editor ? escapeHTML(bd.editor)
+          : year ? escapeHTML(year)
+          : "";
 
 
 const tomeTitle =
@@ -185,6 +191,7 @@ const tomeTitle =
           ${tomeTitle ? `<div class="bd-card-title">${tomeTitle}</div>` : ""}
           <div class="author">${escapeHTML(bd.author ?? "")}</div>
           <div class="author">${escapeHTML(bd.artist ?? "")}</div>
+          ${editorYear ? `<div class="author">${editorYear}</div>` : ""}
           <div class="bd-card-actions">
             <button class="btn" onclick="event.stopPropagation(); editBD(${bd.id})">✏️</button>
             <button class="btn" onclick="event.stopPropagation(); deleteBD(${bd.id})">🗑️</button>
@@ -194,13 +201,6 @@ const tomeTitle =
       // MODE LISTE
       else {
         wrap.className = "bd-card-list";
-
-        const year = (bd.date ?? "").slice(0, 4);
-        const editorYear =
-          bd.editor && year ? `${escapeHTML(bd.editor)} • ${escapeHTML(year)}`
-          : bd.editor ? escapeHTML(bd.editor)
-          : year ? escapeHTML(year)
-          : "";
 
         wrap.innerHTML = `
           ${coverHtml}

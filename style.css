@@ -121,10 +121,12 @@ a:hover { text-decoration: underline; }
   margin-left: auto;
   padding: 6px 14px;
   font-size: 1.2rem;
+  font-weight: 800;
   min-height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: 999px;
 }
 #addButton.btn.primary {
   background: var(--accent);
@@ -258,7 +260,7 @@ a:hover { text-decoration: underline; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding:  136px 16px 16px;
   z-index: 99999;
 }
 .modal-content {
@@ -408,7 +410,7 @@ display: grid;
   .grid-mode { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 520px) {
-  .grid-mode { grid-template-columns: repeat(2, 1fr); }
+  .grid-mode { grid-template-columns: repeat(3, 1fr); }
   .app-header h1 { font-size: 1.05rem; }
 }
 @media (max-width: 360px) {

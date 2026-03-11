@@ -153,15 +153,25 @@ function loadBD() {
         ? `<img src="${escapeHTML(bd.cover)}" class="bd-cover-img" alt="Couverture">`
         : `<div class="bd-cover"></div>`;
 
+
+
+
+const tomeTitle =
+          bd.tome && bd.title ? `${escapeHTML(bd.tome)} • ${escapeHTML(bd.title)}`
+          : bd.tome ? escapeHTML(bd.tome)
+          : bd.title ? escapeHTML(bd.title)
+          : "";
+
+
       // MODE GRILLE
       if (listMode === "grid") {
         wrap.className = "bd-card-grid";
         wrap.innerHTML = `
           ${coverHtml}
-          <div class="bd-card-title">${escapeHTML(bd.title)}</div>
+          <div class="bd-card-title">${escapeHTML(bd.series)}</div>
+          ${tomeTitle ? `<div class="bd-card-title">${tomeTitle}</div>` : ""}
           <div class="author">${escapeHTML(bd.author ?? "")}</div>
           <div class="author">${escapeHTML(bd.artist ?? "")}</div>
-
           <div class="bd-card-actions">
             <button class="btn" onclick="event.stopPropagation(); editBD(${bd.id})">✏️</button>
             <button class="btn" onclick="event.stopPropagation(); deleteBD(${bd.id})">🗑️</button>
@@ -183,7 +193,8 @@ function loadBD() {
           ${coverHtml}
 
           <div class="info">
-            <div class="bd-card-title">${escapeHTML(bd.title)}</div>
+          <div class="bd-card-title">${escapeHTML(bd.series)}</div>
+            ${tomeTitle ? `<div class="bd-card-title">${tomeTitle}</div>` : ""}
             <div class="author">${escapeHTML(bd.author ?? "")}</div>
             <div class="author">${escapeHTML(bd.artist ?? "")}</div>
             ${editorYear ? `<div class="meta">${editorYear}</div>` : ""}
@@ -242,6 +253,8 @@ window.addEventListener("DOMContentLoaded", () => {
       byId("dateInput").value = bd.date ?? "";
       byId("statusInput").value = bd.status ?? "a_lire";
       byId("synopsisInput").value = bd.synopsis ?? "";
+      byId("seriesInput").value = bd.series ?? "";
+      byId("tomeInput").value = bd.tome ?? "";
       importedCoverDataURL = bd.cover ?? "";
 
       modalEl.dataset.editId = id;
@@ -299,6 +312,8 @@ window.addEventListener("DOMContentLoaded", () => {
       author: byId("authorInput").value,
       artist: byId("artistInput").value,
       editor: byId("editorInput").value,
+      series: byId("seriesInput").value,
+      tome: Number(byId("tomeInput").value),
       date: byId("dateInput").value,
       status: byId("statusInput").value,
       cover,

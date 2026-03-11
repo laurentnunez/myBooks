@@ -165,6 +165,17 @@ a:hover { text-decoration: underline; }
   gap: 6px;
 }
 
+.series-header {
+  width: 100%;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 6px 4px;
+  margin-top: 10px;
+  color: var(--accent);
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
 /* MODE GRILLE */
 .grid-mode { grid-template-columns: repeat(3, 1fr); }
 .bd-card-grid {
@@ -179,7 +190,8 @@ a:hover { text-decoration: underline; }
   gap: 4px;
   transition: transform .08s ease, box-shadow .2s ease;
 }
-.bd-card-grid:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.35); }
+.bd-card-grid:hover { 
+  transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.35); }
 
 /* MODE LISTE */
 .list-mode {
@@ -219,7 +231,7 @@ a:hover { text-decoration: underline; }
   background:
     linear-gradient(135deg, rgba(77,232,206,0.08), rgba(77,232,206,0.02)),
     #0f141a;
-  border: 1px dashed rgba(77,232,206,0.35);
+  border: 1px solid rgba(77,232,206,0.35);
   display: grid;
   place-items: center;
   color: var(--muted);
@@ -227,7 +239,11 @@ a:hover { text-decoration: underline; }
 }
 
 /* Titres & métas */
-.bd-card-title { font-weight: 500; font-size: .78rem; min-height: 2.2em; letter-spacing: .2px; }
+.bd-card-title { 
+  font-weight: 500; 
+  font-size: .78rem; 
+  min-height: 2.2em; 
+  letter-spacing: .2px; }
 .author { font-size: .72rem; color: var(--muted); }
 .bd-card-actions { display: flex; justify-content: center; gap: 8px; }
 .bd-card-list .info { display: flex; flex-direction: column; gap: 2px; }

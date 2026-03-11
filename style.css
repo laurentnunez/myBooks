@@ -41,6 +41,16 @@ a { color: var(--accent); }
 /* =========================================================
    HEADER
 ========================================================= */
+
+/* Zone haute fixe */
+.top-area {
+    position: sticky;
+    top: 0;
+    z-index: 200000; /* plus haut que modales + contenu */
+    background: var(--bg);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
 .app-header {
   background: var(--bg); /* demandé */
   color: var(--fg);      /* demandé */
@@ -136,6 +146,7 @@ a { color: var(--accent); }
    LISTE — MODE GRILLE
 ========================================================= */
 .bd-list {
+  margin-top: 8px;
   padding: 6px;
   display: grid;
   gap: 6px;

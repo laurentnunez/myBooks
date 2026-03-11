@@ -133,9 +133,6 @@ function loadBD() {
         `;
       }
 
-      // Clic → fiche détail
-      wrap.onclick = () => openDetail(bd);
-
       listEl.appendChild(wrap);
     });
   };

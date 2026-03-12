@@ -263,7 +263,7 @@ a:hover { text-decoration: underline; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding:  136px 16px 16px;
+  padding:  50px 16px 16px;
   z-index: 99999;
 }
 .modal-content {

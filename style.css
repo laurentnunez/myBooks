@@ -6,12 +6,12 @@
   --fg: #e5e7eb;
   --card: #1b1e25;
   --muted: #94a3b8;
-  --accent: #4de8ce;
+  --accent: #4de8ba;
   --shadow: 0 2px 14px rgba(0,0,0,.3);
   --cover-ratio: 3/4;
   --gap: 12px;
   --switch-bg: #334155;
-  --switch-active: #4de8ce;     /* aligné sur --accent */
+  --switch-active: #4de8ba;     /* aligné sur --accent */
 }
 
 /* =========================================================
@@ -232,7 +232,7 @@ a:hover { text-decoration: underline; }
   background:
     linear-gradient(135deg, rgba(77,232,206,0.08), rgba(77,232,206,0.02)),
     #0f141a;
-  border: 1px solid rgba(77,232,206,0.35);
+  border: 1px solid var(--accent);
   display: grid;
   place-items: center;
   color: var(--muted);
@@ -310,7 +310,7 @@ display: grid;
 
 .titleTome {
   display: flex;
-  gap: 10px;
+  gap: 4px;
 }
 
 
@@ -385,7 +385,7 @@ display: grid;
 }
 @keyframes flashNew {
   0%   { box-shadow: 0 0 0px 0px rgba(77,232,206,0.0); filter: brightness(1.00); }
-  30%  { box-shadow: 0 0 0px 6px rgba(77,232,206,0.35); filter: brightness(1.12); }
+  30%  { box-shadow: 0 0 0px 6px var(--accent); filter: brightness(1.12); }
   100% { box-shadow: 0 0 0px 0px rgba(77,232,206,0.0); filter: brightness(1.00); }
 }
 

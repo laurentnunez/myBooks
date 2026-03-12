@@ -444,6 +444,46 @@ display: grid;
 
 }
 
+/* =============================
+   ANIMATIONS MODALES
+============================= */
+
+/* Animation à l'ouverture */
+.modal.show .modal-content {
+  animation: modalFadeIn 300ms ease forwards;
+}
+
+@keyframes modalFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animation à la fermeture */
+.modal.hide .modal-content {
+  animation: modalFadeOut 250ms ease forwards;
+}
+
+@keyframes modalFadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+}
+
+
+
+
+
 /* =========================================================
    RESPONSIVE
 ========================================================= */

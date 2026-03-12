@@ -35,20 +35,22 @@ let listMode = "grid";
 /* =========================================================
    Utils
 ========================================================= */
-function byId(id) { return document.getElementById(id); }
+function byId(id) {
+  return document.getElementById(id);
+}
 
 function escapeHTML(s = "") {
-  return s.toString().replace(/[&<>\"']/g, c => ({
+  return s.toString().replace(/[&<>\"']/g, (c) => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
-    "'": "&#39;"
+    "'": "&#39;",
   }[c]));
 }
 
 function toBase64(file) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const r = new FileReader();
     r.onload = () => resolve(r.result);
     r.readAsDataURL(file);
@@ -56,7 +58,7 @@ function toBase64(file) {
 }
 
 /* =========================================================
-   Toast + icône SVG accent
+   Toast
 ========================================================= */
 function showToast(message, type = "success") {
   const root = document.getElementById("toastRoot") || document.body;
@@ -73,6 +75,7 @@ function showToast(message, type = "success") {
             stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   `;
+
   const iconError = `
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
       <path d="M12 4v8m0 4v2M4 12h16"
@@ -87,16 +90,19 @@ function showToast(message, type = "success") {
   `;
 
   root.appendChild(el);
-  el.offsetHeight; 
+
+  el.offsetHeight;
   el.classList.add("show");
 
   setTimeout(() => el.remove(), 2600);
 }
 
 /* =========================================================
-   MODALE DÉTAIL BD — nouvelle version
+   MODALE DÉTAIL BD — Animée
 ========================================================= */
 function openDetailModal(bd) {
+  const detail = byId("detailModal");
+
   byId("detailSeries").textContent = bd.series ?? "";
   byId("detailTitle").textContent = bd.title ?? "";
   byId("detailTome").textContent = bd.tome ?? "";
@@ -106,15 +112,22 @@ function openDetailModal(bd) {
   byId("detailDate").textContent = bd.date ?? "";
   byId("detailCover").src = bd.cover ?? "";
 
-  byId("detailModal").classList.remove("hidden");
-  byId("addButton").classList.add("hidden");
+  detail.classList.remove("hidden", "hide");
+  detail.classList.add("show");
 
-  byId("detailModal").dataset.bdId = bd.id;
+  byId("addButton").classList.add("hidden");
+  detail.dataset.bdId = bd.id;
 }
 
 function closeDetailModal() {
-  byId("detailModal").classList.add("hidden");
-  byId("addButton").classList.remove("hidden");
+  const detail = byId("detailModal");
+  detail.classList.remove("show");
+  detail.classList.add("hide");
+
+  setTimeout(() => {
+    detail.classList.add("hidden");
+    byId("addButton").classList.remove("hidden");
+  }, 250);
 }
 
 /* =========================================================
@@ -136,22 +149,22 @@ function loadBD() {
       return bd.status === currentFilter;
     });
 
-    // Tri par série et par tome
+    // TRI : Série → Tome → Titre
     items.sort((a, b) => {
-    const sa = (a.series ?? "").toLowerCase();
-    const sb = (b.series ?? "").toLowerCase();
+      const sa = (a.series ?? "").toLowerCase();
+      const sb = (b.series ?? "").toLowerCase();
 
-    if (sa !== sb) return sa.localeCompare(sb);
+      if (sa !== sb) return sa.localeCompare(sb);
 
-    const ta = Number(a.tome ?? 0);
-    const tb = Number(b.tome ?? 0);
+      const ta = Number(a.tome ?? 0);
+      const tb = Number(b.tome ?? 0);
+      if (ta !== tb) return ta - tb;
 
-    if (ta !== tb) return ta - tb;
-
-    return (a.title ?? "").localeCompare(b.title ?? "", "fr", { sensitivity: "base" });
+      return (a.title ?? "").localeCompare(b.title ?? "", "fr", {
+        sensitivity: "base",
+      });
     });
 
-    
     // Reset UI
     listEl.innerHTML = "";
     listEl.classList.toggle("grid-mode", listMode === "grid");
@@ -165,61 +178,62 @@ function loadBD() {
         ? `<img src="${escapeHTML(bd.cover)}" class="bd-cover-img" alt="Couverture">`
         : `<div class="bd-cover"></div>`;
 
+      const year = (bd.date ?? "").slice(0, 4);
 
-        const year = (bd.date ?? "").slice(0, 4);
-        const editorYear =
-          bd.editor && year ? `${escapeHTML(bd.editor)} • ${escapeHTML(year)}`
-          : bd.editor ? escapeHTML(bd.editor)
-          : year ? escapeHTML(year)
+      const serie = escapeHTML(bd.series ?? "");
+      const tome = escapeHTML(bd.tome ?? "");
+      const title = escapeHTML(bd.title ?? "");
+
+      const editorYear =
+        bd.editor && year
+          ? `${escapeHTML(bd.editor)} • ${year}`
+          : bd.editor
+          ? escapeHTML(bd.editor)
+          : year
+          ? year
           : "";
 
+      const tomeTitle =
+        bd.tome && bd.title
+          ? `${tome} • ${title}`
+          : bd.tome
+          ? tome
+          : title;
 
-const tomeTitle =
-          bd.tome && bd.title ? `${escapeHTML(bd.tome)} • ${escapeHTML(bd.title)}`
-          : bd.tome ? escapeHTML(bd.tome)
-          : bd.title ? escapeHTML(bd.title)
-          : "";
-
-
-      // MODE GRILLE
+      /* ===========================
+         MODE GRILLE
+      ============================ */
       if (listMode === "grid") {
         wrap.className = "bd-card-grid";
         wrap.innerHTML = `
           ${coverHtml}
-          <div class="bd-card-title">${escapeHTML(bd.series)}</div>
+          <div class="bd-card-title">${serie}</div>
           ${tomeTitle ? `<div class="author">${tomeTitle}</div>` : ""}
           
-          <div class="bd-card-actions">
-            <button class="btn" onclick="event.stopPropagation(); editBD(${bd.id})">✏️</button>
-            <button class="btn" onclick="event.stopPropagation(); deleteBD(${bd.id})">🗑️</button>
-          </div>
         `;
       }
-      // MODE LISTE
+
+      /* ===========================
+         MODE LISTE
+      ============================ */
       else {
         wrap.className = "bd-card-list";
-
         wrap.innerHTML = `
           ${coverHtml}
 
           <div class="info">
-          <div class="bd-card-title">${escapeHTML(bd.series)}</div>
+            <div class="bd-card-title">${serie}</div>
             ${tomeTitle ? `<div class="bd-card-title">${tomeTitle}</div>` : ""}
             <div class="author">${escapeHTML(bd.author ?? "")}</div>
             <div class="author">${escapeHTML(bd.artist ?? "")}</div>
             ${editorYear ? `<div class="meta">${editorYear}</div>` : ""}
           </div>
 
-          <div class="bd-card-actions">
-            <button class="btn" onclick="event.stopPropagation(); editBD(${bd.id})">✏️</button>
-            <button class="btn" onclick="event.stopPropagation(); deleteBD(${bd.id})">🗑️</button>
-          </div>
+          
         `;
       }
 
-      // Clic sur la carte → ouvre la modale Détails
       wrap.onclick = () => openDetailModal(bd);
-
       listEl.appendChild(wrap);
     });
   };
@@ -233,6 +247,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const addButton = byId("addButton");
   const modalEl = byId("modal");
 
+  /* Toggle grille/liste */
   if (viewModeToggle) {
     viewModeToggle.checked = listMode === "list";
     viewModeToggle.addEventListener("change", () => {
@@ -241,29 +256,28 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =========================================================
-     CRUD
-  ========================================================= */
+  /* CRUD : Delete */
   window.deleteBD = function deleteBD(id) {
     const tx = db.transaction("bd", "readwrite");
     tx.objectStore("bd").delete(id);
     tx.oncomplete = loadBD;
   };
 
+  /* CRUD : Edit */
   window.editBD = function editBD(id) {
     const tx = db.transaction("bd", "readonly");
     tx.objectStore("bd").get(id).onsuccess = (e) => {
       const bd = e.target.result;
       if (!bd) return;
 
+      byId("seriesInput").value = bd.series ?? "";
+      byId("tomeInput").value = bd.tome ?? "";
       byId("titleInput").value = bd.title ?? "";
       byId("authorInput").value = bd.author ?? "";
       byId("artistInput").value = bd.artist ?? "";
       byId("editorInput").value = bd.editor ?? "";
       byId("dateInput").value = bd.date ?? "";
       byId("statusInput").value = bd.status ?? "a_lire";
-      byId("seriesInput").value = bd.series ?? "";
-      byId("tomeInput").value = bd.tome ?? "";
       importedCoverDataURL = bd.cover ?? "";
 
       modalEl.dataset.editId = id;
@@ -272,37 +286,38 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   /* =========================================================
-     Modale Ajout/Édition
+     Modale Ajout / Edition — Animée
   ========================================================= */
   function openModal() {
-    modalEl.classList.remove("hidden");
+    modalEl.classList.remove("hidden", "hide");
+    modalEl.classList.add("show");
     addButton.classList.add("hidden");
   }
 
   function closeModal() {
-    modalEl.classList.add("hidden");
-    addButton.classList.remove("hidden");
-    delete modalEl.dataset.editId;
+    modalEl.classList.remove("show");
+    modalEl.classList.add("hide");
+
+    setTimeout(() => {
+      modalEl.classList.add("hidden");
+      addButton.classList.remove("hidden");
+      delete modalEl.dataset.editId;
+    }, 250);
   }
 
   addButton.onclick = openModal;
-
   byId("cancelButton").onclick = () => {
     resetForm();
     closeModal();
   };
 
-  /* =========================================================
-     Boutons modale Détails
-  ========================================================= */
+  /* Boutons modale détail */
   byId("detailClose").onclick = closeDetailModal;
-
   byId("detailEdit").onclick = () => {
     const id = Number(byId("detailModal").dataset.bdId);
     closeDetailModal();
     editBD(id);
   };
-
   byId("detailDelete").onclick = () => {
     const id = Number(byId("detailModal").dataset.bdId);
     closeDetailModal();
@@ -317,15 +332,16 @@ window.addEventListener("DOMContentLoaded", () => {
     const cover = file ? await toBase64(file) : importedCoverDataURL;
 
     const bd = {
+      series: byId("seriesInput").value,
+      tome: Number(byId("tomeInput").value),
       title: byId("titleInput").value,
       author: byId("authorInput").value,
       artist: byId("artistInput").value,
       editor: byId("editorInput").value,
-      series: byId("seriesInput").value,
-      tome: Number(byId("tomeInput").value),
       date: byId("dateInput").value,
       status: byId("statusInput").value,
-      cover
+      cover,
+      synopsis: ""  // tu as supprimé le champ, donc vide proprement
     };
 
     const editId = modalEl.dataset.editId;
@@ -333,12 +349,13 @@ window.addEventListener("DOMContentLoaded", () => {
     const store = tx.objectStore("bd");
 
     let newId = null;
+
     if (editId) {
       bd.id = Number(editId);
       store.put(bd);
     } else {
       const req = store.add(bd);
-      req.onsuccess = (e) => { newId = e.target.result; };
+      req.onsuccess = (e) => (newId = e.target.result);
     }
 
     tx.oncomplete = () => {
@@ -348,12 +365,8 @@ window.addEventListener("DOMContentLoaded", () => {
       closeModal();
       loadBD();
 
-      showToast(
-        isEdit ? "BD mise à jour avec succès !" : "BD ajoutée !",
-        "success"
-      );
+      showToast(isEdit ? "BD mise à jour !" : "BD ajoutée !", "success");
 
-      // Highlight carte ajoutée
       if (!isEdit && newId != null) {
         setTimeout(() => {
           const card = document.querySelector(`[data-bd-id="${newId}"]`);
@@ -371,8 +384,11 @@ window.addEventListener("DOMContentLoaded", () => {
      Reset Form
   ========================================================= */
   function resetForm() {
-    ["titleInput","authorInput","artistInput","editorInput","dateInput"]
-      .forEach(id => { const el = byId(id); if (el) el.value = ""; });
+    ["seriesInput","tomeInput","titleInput","authorInput","artistInput","editorInput","dateInput"]
+      .forEach((id) => {
+        const el = byId(id);
+        if (el) el.value = "";
+      });
 
     byId("statusInput").value = "a_lire";
     byId("coverInput").value = "";
@@ -384,7 +400,9 @@ window.addEventListener("DOMContentLoaded", () => {
   ========================================================= */
   document.querySelectorAll(".filter-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".filter-btn").forEach((b) =>
+        b.classList.remove("active")
+      );
       btn.classList.add("active");
       currentFilter = btn.dataset.filter;
       loadBD();
@@ -393,7 +411,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const collectBtn = document.querySelector('[data-filter="collec"]');
   if (collectBtn) {
-    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".filter-btn").forEach((b) =>
+      b.classList.remove("active")
+    );
     collectBtn.classList.add("active");
   }
 });

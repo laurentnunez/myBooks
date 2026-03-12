@@ -276,11 +276,13 @@ a:hover { text-decoration: underline; }
   box-shadow: var(--shadow);
   position: relative;
   z-index: 100000;
-  
-max-height: 90vh;
+  max-height: 90vh;
   overflow-y: auto;
-
 }
+
+
+
+
 .modal-content h2 { margin: 0 0 8px 0; }
 .modal-actions {
   display: flex;
@@ -306,15 +308,24 @@ display: grid;
   border: 1px solid var(--border);
 }
 
-.tomeInput {
-  
-
-
-}
-
 .titleTome {
   display: flex;
+  gap: 10px;
 }
+
+
+.tomeInput {
+  width: 80px;        /* largeur fixe */
+  flex-shrink: 0;     /* NE PAS rétrécir encore plus */
+  text-align: center; /* esthétique */
+}
+
+
+#titleInput {
+  flex: 1;
+}
+
+
 
 .form-grid .synopsis {
   grid-column: 1 / -1;

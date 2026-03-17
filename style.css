@@ -321,6 +321,26 @@ display: grid;
   width: 100%;
 }
 
+
+/* Ligne Éditeur + Pages */
+.editor-pages-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Éditeur réduit */
+#editorInput {
+  flex: 1;          /* prend la majorité de la ligne */
+}
+
+/* Pages réduit */
+#pagesInput {
+  width: 90px;       /* largeur fixe adaptée à 4 chiffres */
+  text-align: center;
+}
+
+
 /* Le champ date prend plus de place */
 #dateInput {
   flex: 1;

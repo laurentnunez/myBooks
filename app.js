@@ -277,7 +277,13 @@ if (groupToggle) {
     loadBD();                                // on passe par l'unique fonction
   });
 }
-  
+
+ byId("pagesInput").addEventListener("input", () => {
+        const el = byId("pagesInput");
+        if (el.value.length > 4) {
+          el.value = el.value.slice(0, 4);
+        }
+      });
 
   /* CRUD : Delete */
   window.deleteBD = function deleteBD(id) {

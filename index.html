@@ -79,8 +79,10 @@
         </div>
         <input id="authorInput" placeholder="Auteur(s)" />
         <input id="artistInput" placeholder="Dessinateur(s)" />
-        <input id="editorInput" placeholder="Éditeur" />
-      <input id="pagesInput" type="number" placeholder="Pages" min="1" />
+        <div class="editor-pages-row">
+          <input id="editorInput" placeholder="Éditeur" />
+          <input id="pagesInput" type="number" placeholder="Pages" min="1" maxlength="4" />
+        </div>
       
         <div class="date-status-row">
           <input type="date" id="dateInput" placeholder="Date"/>

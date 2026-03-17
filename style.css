@@ -390,7 +390,7 @@ display: grid;
   display: flex;
   align-items: center;
   gap: 10px;
-  z-index: 120000;
+  z-index: 200000;
   opacity: 0;
   pointer-events: none;
 }
@@ -779,22 +779,46 @@ body.has-bottom-actions {
   position: relative;
 }
 
-
 /* =========================================================
    RESPONSIVE
 ========================================================= */
 @media (max-width: 1024px) {
   .grid-mode { grid-template-columns: repeat(4, 1fr); }
 }
+
+/* Desktop large (≥ 900px) */
+@media (min-width: 900px) {
+    .series-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
   .grid-mode { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* Tablettes (≥ 540px) */
+@media (min-width: 540px) {
+    .series-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
+    }
+}
+
+
 @media (max-width: 520px) {
   .grid-mode { grid-template-columns: repeat(3, 1fr); }
   .app-header h1 { font-size: 1.05rem; }
   #bdList {padding-bottom: calc(var(--bottom-actions-h) + 12px + env(safe-area-inset-bottom));}
-
 }
+
+
+/* Smartphones moyens (360–540px) */
+@media (min-width: 360px) and (max-width: 540px) {
+    .series-grid {
+        grid-template-columns: repeat(3, 1fr); /* 2 colonnes */
+    }
+}
+
 @media (max-width: 360px) {
   .grid-mode { grid-template-columns: repeat(2, 1fr); }
   .filter-bar { gap: 6px; }
@@ -807,30 +831,7 @@ body.has-bottom-actions {
   .series-grid { grid-template-columns: 1fr; /* 1 colonne */
     }
   }
-
 }
 
-/* ================================================
-   RESPONSIVE BREAKPOINTS
-================================================ */
 
-/* Smartphones moyens (360–540px) */
-@media (min-width: 360px) and (max-width: 540px) {
-    .series-grid {
-        grid-template-columns: repeat(3, 1fr); /* 2 colonnes */
-    }
-}
 
-/* Tablettes (≥ 540px) */
-@media (min-width: 540px) {
-    .series-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
-    }
-}
-
-/* Desktop large (≥ 900px) */
-@media (min-width: 900px) {
-    .series-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}

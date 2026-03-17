@@ -423,6 +423,9 @@ const exportBtn = byId("exportButton");
 if (exportBtn) {
   exportBtn.addEventListener("click", () => {
     exportCollection();
+    saveMenu.classList.add("hidden");
+    saveMenu.classList.remove("show");
+
   });
 }
 
@@ -435,6 +438,9 @@ const importInput = byId("importInput");
 if (importBtn && importInput) {
   importBtn.addEventListener("click", () => {
     importInput.click();
+    saveMenu.classList.add("hidden");
+    saveMenu.classList.remove("show");
+
   });
 
   importInput.addEventListener("change", () => {

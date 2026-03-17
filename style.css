@@ -328,17 +328,21 @@ display: grid;
   display: flex;
   gap: 10px;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 /* Éditeur réduit */
 #editorInput {
-  flex: 1;          /* prend la majorité de la ligne */
+  flex: 1 1 auto; /* grandit/rétrécit selon la place */
+  min-width: 0;   /* indispensable en flex pour éviter un débordement horizontal */
 }
 
 /* Pages réduit */
 #pagesInput {
-  width: 90px;       /* largeur fixe adaptée à 4 chiffres */
+  flex: 0 0 auto;
+  width: clamp(64px, 22vw, 96px);      /* largeur fixe adaptée à 4 chiffres */
   text-align: center;
+  box-sizing: border-box;
 }
 
 
@@ -679,18 +683,16 @@ display: grid;
   .grid-mode { grid-template-columns: repeat(2, 1fr); }
   .filter-bar { gap: 6px; }
   #addButton { min-height: 34px; padding: 6px 12px; }
+  #pagesInput { width: clamp(56px, 24vw, 84px);
+  .series-grid { grid-template-columns: 1fr; /* 1 colonne */
+    }
+  }
+
 }
 
 /* ================================================
    RESPONSIVE BREAKPOINTS
 ================================================ */
-
-/* Très petit écran (type iPhone SE, < 360px) */
-@media (max-width: 360px) {
-    .series-grid {
-        grid-template-columns: 1fr; /* 1 colonne */
-    }
-}
 
 /* Smartphones moyens (360–540px) */
 @media (min-width: 360px) and (max-width: 540px) {

@@ -257,9 +257,70 @@ function loadBD() {
         `;
         wrap.onclick = () => openDetailModal(bd);
         listEl.appendChild(wrap);
+
       });
+      updateStats({ scope: "all" });
     }
   };
+}
+
+
+// =========================================================
+// STATISTIQUES (total collection par défaut)
+// =========================================================
+
+async function updateStats({ scope = "all" } = {}) {
+  // scope: "all" = toute la collection (recommandé)
+  //        "filter" = en fonction du filtre courant (collec / à_lire / lu / wishlist)
+
+  const tx = db.transaction("bd", "readonly");
+  const store = tx.objectStore("bd");
+
+  return new Promise((resolve) => {
+    const req = store.getAll();
+    req.onsuccess = () => {
+      let items = req.result || [];
+
+      if (scope === "filter") {
+        items = items.filter((bd) => {
+          if (currentFilter === "collec") return bd.status === "a_lire" || bd.status === "lu";
+          return bd.status === currentFilter;
+        });
+      }
+
+      // Total BD
+      const total = items.length;
+
+      // BD lues
+      const readCount = items.filter(b => b.status === "lu").length;
+
+      // Pages lues (somme des pages des BD au status "lu")
+      const pagesRead = items
+        .filter(b => b.status === "lu")
+        .reduce((sum, b) => sum + Number(b.pages || b.pageCount || 0), 0);
+
+      // Push UI
+      setTextSafe("statTotal", total);
+      setTextSafe("statRead", readCount);
+      setTextSafe("statPages", pagesRead);
+
+      // Afficher/cacher le bloc si vide (optionnel)
+      const statsArea = byId("statsArea");
+      if (statsArea) {
+        if (total === 0) statsArea.classList.add("hidden");
+        else statsArea.classList.remove("hidden");
+      }
+
+      resolve();
+    };
+    req.onerror = () => resolve();
+  });
+}
+
+// Petit helper pour éviter les nulls
+function setTextSafe(id, val) {
+  const el = byId(id);
+  if (el) el.textContent = String(val ?? "0");
 }
 
 /* =========================================================
@@ -307,6 +368,7 @@ if (groupToggle) {
       byId("editorInput").value = bd.editor ?? "";
       byId("dateInput").value = bd.date ?? "";
       byId("statusInput").value = bd.status ?? "a_lire";
+      byId("pagesInput").value = bd.pages ?? "";
       importedCoverDataURL = bd.cover ?? "";
 
       modalEl.dataset.editId = id;
@@ -369,6 +431,7 @@ if (groupToggle) {
       editor: byId("editorInput").value,
       date: byId("dateInput").value,
       status: byId("statusInput").value,
+      pages: byId("pagesInput").value,
       cover,
       synopsis: ""  // tu as supprimé le champ, donc vide proprement
     };
@@ -393,7 +456,7 @@ if (groupToggle) {
       resetForm();
       closeModal();
       loadBD();
-
+      updateStats({ scope: "all" });
       showToast(isEdit ? "BD mise à jour !" : "BD ajoutée !", "success");
 
       if (!isEdit && newId != null) {
@@ -413,7 +476,7 @@ if (groupToggle) {
      Reset Form
   ========================================================= */
   function resetForm() {
-    ["seriesInput","tomeInput","titleInput","authorInput","artistInput","editorInput","dateInput"]
+    ["seriesInput","tomeInput","titleInput","authorInput","artistInput","editorInput","dateInput","pagesInput"]
       .forEach((id) => {
         const el = byId(id);
         if (el) el.value = "";

@@ -782,31 +782,26 @@ body.has-bottom-actions {
 /* =========================================================
    RESPONSIVE
 ========================================================= */
-@media (max-width: 1024px) {
-  .grid-mode { grid-template-columns: repeat(4, 1fr); }
-}
+
 
 /* Desktop large (≥ 900px) */
 @media (min-width: 900px) {
-    .series-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .series-grid {grid-template-columns: repeat(4, 1fr);
     }
 }
 
-@media (max-width: 768px) {
-  .grid-mode { grid-template-columns: repeat(3, 1fr); }
+@media (min-width: 768px) {
+  .grid-mode { grid-template-columns: repeat(5, 1fr); }
 }
 
 /* Tablettes (≥ 540px) */
 @media (min-width: 540px) {
-    .series-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
+    .series-grid { grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
     }
 }
 
-
 @media (max-width: 520px) {
-  .grid-mode { grid-template-columns: repeat(3, 1fr); }
+  
   .app-header h1 { font-size: 1.05rem; }
   #bdList {padding-bottom: calc(var(--bottom-actions-h) + 12px + env(safe-area-inset-bottom));}
 }
@@ -814,8 +809,7 @@ body.has-bottom-actions {
 
 /* Smartphones moyens (360–540px) */
 @media (min-width: 360px) and (max-width: 540px) {
-    .series-grid {
-        grid-template-columns: repeat(3, 1fr); /* 2 colonnes */
+    .series-grid {grid-template-columns: repeat(3, 1fr); /* 2 colonnes */
     }
 }
 

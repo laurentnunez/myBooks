@@ -13,77 +13,75 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 
-<!-- Racine Toast -->
+<body>
+
+  <!-- Racine Toast -->
   <div id="toastRoot" aria-live="polite" aria-atomic="true"></div>
+
   <!-- JS -->
   <script src="app.js"></script>
+
   <!-- Barre d'actions fixe (mobile) -->
-<div id="bottomActions" class="bottom-actions" aria-label="Actions d'export/import">
-  
-<button id="saveMenuButton" class="btn">Sauvegarde</button>
+  <div id="bottomActions" class="bottom-actions" aria-label="Actions d'export/import">
+    <button id="saveMenuButton" class="btn">Sauvegarde</button>
 
-<!-- Mini-menu déroulant -->
-<div id="saveMenu" class="save-menu hidden">
-    <button id="exportButton" class="btn small">Enregistrer votre collection</button>
-    <input type="file" id="importInput" accept=".json" class="hidden" />
-    <button id="importButton" class="btn small">Importer une collection</button>
-</div>
+    <!-- Mini-menu déroulant -->
+    <div id="saveMenu" class="save-menu hidden">
+      <button id="exportButton" class="btn small">Enregistrer votre collection</button>
+      <input type="file" id="importInput" accept=".json" class="hidden" />
+      <button id="importButton" class="btn small">Importer une collection</button>
+    </div>
+  </div>
 
-</div>
 
-</body>
-</html>
-
-<body>
   <!-- En-tête -->
-<div class="top-area">   
-  <header class="app-header">
-    <div class="thehead">
-      <img class="mybookslogo" src="mybookslogo.png" alt="Logo MyBooks" />
-      <h1>MyBooks</h1>
-    </div>
-    <div class="group-toggle" title="Grouper les tomes par série (mode grille)">
-      <span>Album</span>
-      <label class="switch">
-        <input type="checkbox" id="groupBySeriesToggle" />
-        <span class="slider"></span>
-      </label>
-      <span>Série</span>
-    </div> 
+  <div class="top-area">
+    <header class="app-header">
+      <div class="thehead">
+        <img class="mybookslogo" src="mybookslogo.png" alt="Logo MyBooks" />
+        <h1>MyBooks</h1>
+      </div>
 
-  </header>
+      <div class="group-toggle" title="Grouper les tomes par série (mode grille)">
+        <span>Album</span>
+        <label class="switch">
+          <input type="checkbox" id="groupBySeriesToggle" />
+          <span class="slider"></span>
+        </label>
+        <span>Série</span>
+      </div>
+    </header>
 
-  <!-- Filtres -->
-  <section id="filtersArea" class="filters-area">
-    <div id="filterBar" class="filter-bar">
-      <button class="filter-btn" data-filter="collec">La Collec'</button>
-      <button class="filter-btn" data-filter="a_lire">À lire</button>
-      <button class="filter-btn" data-filter="lu">Lu</button>
-      <!--<button class="filter-btn" data-filter="a_vendre">À vendre</button> -->
-      <button class="filter-btn" data-filter="wishlist">Wishlist</button>
-    
-    </div>
-    <div class="filters-actions">
-      <button id="exportButton" class="btn">Exporter</button>
+    <!-- Filtres -->
+    <section id="filtersArea" class="filters-area">
+      <div id="filterBar" class="filter-bar">
+        <button class="filter-btn" data-filter="collec">La Collec'</button>
+        <button class="filter-btn" data-filter="a_lire">À lire</button>
+        <button class="filter-btn" data-filter="lu">Lu</button>
+        <button class="filter-btn" data-filter="wishlist">Wishlist</button>
+      </div>
+
+      <div class="filters-actions">
+        <button id="exportButton" class="btn">Exporter</button>
         <input type="file" id="importInput" accept=".json" class="hidden" />
         <button id="importButton" class="btn">Importer</button>
-      <button id="addButton" class="btn primary add-floating" aria-label="Ajouter une BD">+</button>
-    </div>
-  </section>
-  
-</div>
 
-<!-- Stastistiques -->
-<section id="statsArea" class="stats-area">
+        <button id="addButton" class="btn primary add-floating" aria-label="Ajouter une BD">+</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Statistiques -->
+  <section id="statsArea" class="stats-area">
     <div class="stats-item"><strong>Total:</strong> <span id="statTotal">0</span></div>
     <div class="stats-item"><strong>Lues :</strong> <span id="statRead">0</span></div>
     <div class="stats-item"><strong>Pages lues :</strong> <span id="statPages">0</span></div>
-</section>
+  </section>
 
   <!-- Liste des BD -->
   <section id="bdList" class="bd-list grid-mode"></section>
 
-  <!-- Modale d’ajout / édition -->
+  <!-- Modale ajout / édition -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
       <h2 id="modalTitle">Ajouter / Modifier une BD</h2>
@@ -100,18 +98,18 @@
           <input id="editorInput" placeholder="Éditeur" />
           <input id="pagesInput" type="number" placeholder="Pages" min="1" maxlength="4" />
         </div>
-      
+
         <div class="date-status-row">
-          <input type="date" id="dateInput" placeholder="Date"/>
+          <input type="date" id="dateInput" placeholder="Date" />
           <select id="statusInput">
             <option value="a_lire">À lire</option>
             <option value="lu">Lu</option>
             <option value="wishlist">Wishlist</option>
           </select>
         </div>
+
         <label for="coverInput">Couverture :</label>
         <input type="file" accept="image/*" id="coverInput" />
-
       </div>
 
       <div class="modal-actions">
@@ -121,43 +119,49 @@
     </div>
   </div>
 
-<!-- Modale Détails BD -->
-<div id="detailModal" class="modal hidden">
-  <div class="modal-content detail-modal">
-  <div class="detail-layout">
-    <!-- Cover -->
-    <div class="detail-cover-wrap">
-      <img id="detailCover" class="detail-cover" alt="Couverture BD">
-    </div>
+  <!-- Modale détails -->
+  <div id="detailModal" class="modal hidden">
+    <div class="modal-content detail-modal">
+      <div class="detail-layout">
 
-    <!-- Infos -->
-    <div class="detail-info">
-      <div class="detail-topline">
-        <span id="detailSeries" class="chip chip-accent"></span>
-        <span class="chip"><span class="chip-label">Tome</span> <span id="detailTome"></span></span>
+        <!-- Cover -->
+        <div class="detail-cover-wrap">
+          <img id="detailCover" class="detail-cover" alt="Couverture BD">
+        </div>
+
+        <!-- Infos -->
+        <div class="detail-info">         
+          
+          <div class="detail-topline">
+            <!-- Série -->
+            <h3 id="detailSeries" class="detail-series"></h3>
+            <!-- Tome -->
+            <span class="chip">
+              <span id="detailTomeLabel" class="chip-label">Tome</span>
+              <span id="detailTome"></span>
+            </span>
+          </div>
+
+          <div class="detail-meta">
+            <h2 id="detailTitle" class="detail-title"></h2>
+            <div class="meta-row"><span class="meta-label">Auteur</span><span id="detailAuthor" class="meta-value"></span></div>
+            <div class="meta-row"><span class="meta-label">Dessinateur</span><span id="detailArtist" class="meta-value"></span></div>
+            <div class="meta-row"><span class="meta-label">Éditeur</span><span id="detailEditor" class="meta-value"></span></div>
+            <div class="meta-row"><span class="meta-label">Parution</span><span id="detailDate" class="meta-value"></span></div>
+          </div>
+        </div>
       </div>
 
-      <h2 id="detailTitle" class="detail-title"></h2>
-
-      <div class="detail-meta">
-        <div class="meta-row"><span class="meta-label">Auteur</span><span id="detailAuthor" class="meta-value"></span></div>
-        <div class="meta-row"><span class="meta-label">Dessinateur</span><span id="detailArtist" class="meta-value"></span></div>
-        <div class="meta-row"><span class="meta-label">Éditeur</span><span id="detailEditor" class="meta-value"></span></div>
-        <div class="meta-row"><span class="meta-label">Parution</span><span id="detailDate" class="meta-value"></span></div>
+      <div class="modal-actions">
+        <button id="detailEdit" class="btn">✏️ Modifier</button>
+        <button id="detailDelete" class="btn">🗑️ Supprimer</button>
+        <button id="detailClose" class="btn primary">Fermer</button>
       </div>
     </div>
   </div>
 
-  <div class="modal-actions">
-    <button id="detailEdit" class="btn">✏️ Modifier</button>
-    <button id="detailDelete" class="btn">🗑️ Supprimer</button>
-    <button id="detailClose" class="btn primary">Fermer</button>
-  </div>
-</div>
-</div>
-
-    
   <!-- JS -->
   <script src="app.js"></script>
+
 </body>
 </html>

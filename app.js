@@ -51,6 +51,11 @@ function escapeHTML(s = "") {
   }[c]));
 }
 
+function formatTomeLabel(tome) {
+  const n = Number(tome);
+  return n === 0 ? "Récit complet" : `Tome ${n}`;
+}
+
 function toBase64(file) {
   return new Promise((resolve) => {
     const r = new FileReader();
@@ -105,15 +110,34 @@ function showToast(message, type = "success") {
 ========================================================= */
 function openDetailModal(bd) {
   const detail = byId("detailModal");
+  const detailTomeLabel = byId("detailTomeLabel");
+  const detailTomeValue = byId("detailTome")
 
   byId("detailSeries").textContent = bd.series ?? "";
   byId("detailTitle").textContent = bd.title ?? "";
-  byId("detailTome").textContent = bd.tome ?? "";
+  //byId("detailTome").textContent = formatTomeLabel(bd.tome);
+
+  // Si tome = 0 → Récit complet sans "Tome"
+  if (Number(bd.tome) === 0) {
+      detailTomeLabel.textContent = "";      // on efface "Tome"
+      detailTomeValue.textContent = "Récit Complet";
+  } 
+  else {
+      detailTomeLabel.textContent = "Tome";  // on remet "Tome"
+      detailTomeValue.textContent = bd.tome;
+  }
+
+
   byId("detailAuthor").textContent = bd.author ?? "";
   byId("detailArtist").textContent = bd.artist ?? "";
   byId("detailEditor").textContent = bd.editor ?? "";
   byId("detailDate").textContent = bd.date ?? "";
   byId("detailCover").src = bd.cover ?? "";
+
+
+
+
+
 
   detail.classList.remove("hidden", "hide");
   detail.classList.add("show");
@@ -216,9 +240,9 @@ function loadBD() {
             ? `<img src="${escapeHTML(bd.cover)}" class="bd-cover-img" alt="Couverture">`
             : `<div class="bd-cover" aria-label="Pas de couverture"></div>`;
 
-          const tome = escapeHTML(bd.tome ?? "");
+          const tome = formatTomeLabel(bd.tome);
           const title = escapeHTML(bd.title ?? "");
-          const label = (bd.tome && bd.title) ? `${tome} • ${title}` : (bd.tome ? tome : title);
+          const label = bd.title ? `${tome} • ${title}` : tome;
 
           card.innerHTML = `
             ${coverHtml}
@@ -246,10 +270,9 @@ function loadBD() {
           : `<div class="bd-cover" aria-label="Pas de couverture"></div>`;
 
         const serie = escapeHTML(bd.series ?? "");
-        const tome = escapeHTML(bd.tome ?? "");
+        const tome = formatTomeLabel(bd.tome);
         const title = escapeHTML(bd.title ?? "");
-
-        const label = (bd.tome && bd.title) ? `${tome} • ${title}` : (bd.tome ? tome : title);
+        const label = bd.title ? `${tome} • ${title}` : tome;
 
         wrap.innerHTML = `
           ${coverHtml}
@@ -634,4 +657,11 @@ if (groupToggle) {
   }
 });
 
+/* =========================================================
+     Fonction pour remplacer "Tome 0" par "Récit complet"
+  ========================================================= */
+function formatTomeLabel(tome) {
+  if (tome === 0 || tome === "0") return "Récit complet";
+  return `Tome ${tome}`;
+}
 

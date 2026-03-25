@@ -276,7 +276,7 @@ body.modal-open {
 .modal-content h2 { margin: 0 0 8px 0; }
 .modal-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
   margin-top: 12px;
 }
@@ -446,7 +446,7 @@ display: grid;
 .detail-modal h3 {
   margin-top: 16px;
   text-align: center;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 
 }
 
@@ -455,6 +455,27 @@ display: grid;
  justify-content:space-evenly
 
 }
+
+
+.series-chip {
+    display: inline-block;
+    margin-bottom: 2px;      /* l'espace entre série et tome */
+    font-size: 1rem;         /* identique aux chips */
+    padding: 4px 10px;
+}
+
+
+.detail-series {
+    margin: 0;
+    padding: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: .2px;
+    color: var(--accent);
+    margin-bottom: 1px;
+}
+
+
 
 /* =============================
    ANIMATIONS MODALES
@@ -539,15 +560,17 @@ display: grid;
 .detail-topline {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
   gap: 8px;
 }
 
 .chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 8px;
-  border-radius: 999px;
+  gap:2px;
+  padding: 2px 6px;
+  border-radius: 99px;
   background: rgba(255,255,255,0.06);
   border: 1px solid var(--border, #263042);
   color: var(--fg);
@@ -574,6 +597,7 @@ display: grid;
 /* Bloc meta compact en lignes */
 .detail-meta {
   display: grid;
+  justify-content: center;
   gap: 6px;
 }
 .meta-row {

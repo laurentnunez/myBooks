@@ -565,6 +565,21 @@ display: grid;
   gap: 8px;
 }
 
+
+
+.detail-title-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tome-chip {
+    font-size: .9rem;
+    padding: 3px 8px;
+}
+
+
 .chip {
   display: flex;
   align-items: center;

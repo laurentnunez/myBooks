@@ -110,8 +110,7 @@ function showToast(message, type = "success") {
 ========================================================= */
 function openDetailModal(bd) {
   const detail = byId("detailModal");
-  const detailTomeLabel = byId("detailTomeLabel");
-  const detailTomeValue = byId("detailTome")
+  const detailTomeValue = byId("detailTome");
 
   byId("detailSeries").textContent = bd.series ?? "";
   byId("detailTitle").textContent = bd.title ?? "";
@@ -119,11 +118,9 @@ function openDetailModal(bd) {
 
   // Si tome = 0 → Récit complet sans "Tome"
   if (Number(bd.tome) === 0) {
-      detailTomeLabel.textContent = "";      // on efface "Tome"
       detailTomeValue.textContent = "Récit Complet";
   } 
   else {
-      detailTomeLabel.textContent = "Tome";  // on remet "Tome"
       detailTomeValue.textContent = bd.tome;
   }
 
@@ -133,11 +130,6 @@ function openDetailModal(bd) {
   byId("detailEditor").textContent = bd.editor ?? "";
   byId("detailDate").textContent = bd.date ?? "";
   byId("detailCover").src = bd.cover ?? "";
-
-
-
-
-
 
   detail.classList.remove("hidden", "hide");
   detail.classList.add("show");

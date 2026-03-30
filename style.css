@@ -439,9 +439,10 @@ display: grid;
   object-fit: cover;
   border-radius: 10px;
   background: #111;
-  margin: 0 auto 16px;
+  margin: 0 auto 4px;
   display: block;
 }
+
 
 .detail-modal h3 {
   margin-top: 16px;
@@ -528,7 +529,6 @@ display: grid;
 .detail-layout {
   display: grid;
   grid-template-columns: 1fr;       /* mobile par défaut */
-  gap: 16px;
   overflow: auto;
   max-height: 100%;
   align-items: start;

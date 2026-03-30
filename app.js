@@ -683,6 +683,28 @@ accentPicker.addEventListener("input", () => {
     localStorage.setItem("accent-color", color);
 });
 
+
+// ===========================
+// RESET ACCENT COLOR
+// ===========================
+const resetAccentBtn = document.getElementById("resetAccentButton");
+
+resetAccentBtn.addEventListener("click", () => {
+    const defaultColor = "#4de8ba";
+
+    // Appliquer la couleur par défaut au DOM
+    document.documentElement.style.setProperty("--accent", defaultColor);
+
+    // Mettre à jour le color picker (optionnel mais propre)
+    const picker = document.getElementById("accentPicker");
+    if (picker) picker.value = defaultColor;
+
+    // Sauvegarde dans localStorage
+    localStorage.setItem("accent-color", defaultColor);
+});
+``
+
+
 });
 
 /* =========================================================

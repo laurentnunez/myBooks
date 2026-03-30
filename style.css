@@ -11,7 +11,7 @@
   --cover-ratio: 3/4;
   --gap: 12px;
   --switch-bg: #334155;
-  --switch-active: #4de8ba;     /* aligné sur --accent */
+  /*--switch-active: #4de8ba;     /* aligné sur --accent */
   --bottom-actions-h: 56px;
 }
 
@@ -134,7 +134,7 @@ a:hover { text-decoration: underline; }
   border-radius: 50%;
   transition: .3s;
 }
-.switch input:checked + .slider { background: var(--switch-active); }
+.switch input:checked + .slider { background: var(--accent); }
 .switch input:checked + .slider:before { transform: translateX(18px); }
 
 /* Bouton “+” en haut, poussé à droite */

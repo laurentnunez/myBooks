@@ -236,8 +236,14 @@ function loadBD() {
           const title = escapeHTML(bd.title ?? "");
           const label = bd.title ? `${tome} • ${title}` : tome;
 
+          const readBadge = bd.status === "lu"
+            ? `<span class="read-badge">✔</span>` 
+            : "";
+
+
           card.innerHTML = `
             ${coverHtml}
+            ${readBadge}
             <div class="bd-card-title">${label}</div>
           `;
           card.onclick = () => openDetailModal(bd);
@@ -266,8 +272,14 @@ function loadBD() {
         const title = escapeHTML(bd.title ?? "");
         const label = bd.title ? `${tome} • ${title}` : tome;
 
+        const readBadge = bd.status === "lu"
+          ? `<span class="read-badge">✔</span>` 
+          : "";
+
+
         wrap.innerHTML = `
           ${coverHtml}
+          ${readBadge}
           <div class="bd-card-title">${serie}</div>
           ${label ? `<div class="author">${label}</div>` : ""}
         `;

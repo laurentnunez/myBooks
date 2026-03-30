@@ -193,6 +193,7 @@ bd-list.grouped {
   flex-direction: column;
   gap: 4px;
   transition: transform .08s ease, box-shadow .2s ease;
+  position: relative;
 }
 .bd-card-grid:hover { 
  filter: brightness(1.07); }
@@ -837,6 +838,27 @@ body.has-bottom-actions {
 .bottom-actions #saveMenuButton {
   position: relative;
 }
+
+.read-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.6);
+    /*border: 1px solid var(--accent);
+    backdrop-filter: blur(4px);*/
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 6px;
+    z-index: 10;
+    opacity: 1 !important; /* éviter une opacité appliquée au parent */
+    pointer-events: none;
+    filter: brightness(1);
+
+}
+
+
 
 /* =========================================================
    RESPONSIVE

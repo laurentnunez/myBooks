@@ -742,6 +742,7 @@ async function openScanner() {
   });
 
   video.srcObject = stream;
+  await video.play();
 
   const detector = new BarcodeDetector({
     formats: ["ean_13", "ean_8", "code_128"]

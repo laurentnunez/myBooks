@@ -141,13 +141,12 @@ a:hover { text-decoration: underline; }
 #addButton {
   margin-left: auto;
   padding: 6px 14px;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 800;
   min-height: 36px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
 }
 #addButton.btn.primary {
   background: var(--accent);

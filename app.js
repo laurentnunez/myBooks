@@ -111,6 +111,21 @@ function showToast(message, type = "success") {
 function openDetailModal(bd) {
   const detail = byId("detailModal");
   const detailTomeValue = byId("detailTome");
+  const toggleBtn = byId("detailToggleRead");
+
+const toggle = byId("detailToggleRead");
+
+if (toggle) {
+  toggle.checked = bd.status === "lu";
+}
+
+  
+if (bd.status === "lu") {
+  toggleBtn.textContent = "📖 Marquer comme à lire";
+} else {
+  toggleBtn.textContent = "✅ Marquer comme lu";
+}
+
 
   byId("detailSeries").textContent = bd.series ?? "";
   byId("detailTitle").textContent = bd.title ?? "";
@@ -722,7 +737,7 @@ accentPicker.addEventListener("input", () => {
 // ===========================
 const resetAccentBtn = document.getElementById("resetAccentButton");
 
-resetAccentBtn.addEventListener("click", () => {
+  resetAccentBtn.addEventListener("click", () => {
     const defaultColor = "#4de8ba";
 
     // Appliquer la couleur par défaut au DOM
@@ -734,8 +749,15 @@ resetAccentBtn.addEventListener("click", () => {
 
     // Sauvegarde dans localStorage
     localStorage.setItem("accent-color", defaultColor);
-});
-``
+  });
+
+  byId("detailToggleRead").onclick = () => {
+  const id = Number(byId("detailModal").dataset.bdId);
+
+  toggleReadStatus(id);
+
+  closeDetailModal(); // optionnel mais UX clean
+};
 
 
 });
@@ -825,4 +847,23 @@ async function handleCodeFound(isbn) {
   }
 }
 
+function toggleReadStatus(id) {
+  const tx = db.transaction("bd", "readwrite");
+  const store = tx.objectStore("bd");
 
+  store.get(id).onsuccess = (e) => {
+    const bd = e.target.result;
+    if (!bd) return;
+
+    bd.status = bd.status === "lu" ? "a_lire" : "lu";
+
+    store.put(bd);
+  };
+
+  tx.oncomplete = () => {
+    loadBD();
+    updateStats({ scope: "all" });
+
+    showToast("Statut mis à jour !");
+  };
+}

@@ -87,6 +87,7 @@ a:hover { text-decoration: underline; }
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
   flex: 1 1 auto;
   min-width: 0;
   align-items: center;
@@ -243,13 +244,27 @@ bd-list.grouped {
 .bd-card-title { 
   font-weight: 400; 
   font-size: .7rem; 
-   
   letter-spacing: .2px; }
+
 .author { 
   font-size: .6rem; 
   color: var(--muted); 
   padding-bottom: 4px;
 }
+
+.bd-card-series {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: 0.2px;
+}
+
+.bd-card-tome {
+  font-size: 0.65rem;
+  color: var(--muted);
+  opacity: 0.9;
+}
+
 
 .bd-card-actions { display: flex; justify-content: center; gap: 8px; }
 .bd-card-list .info { 
@@ -741,7 +756,7 @@ position: fixed;
 }
 
 .stats-area {
-    background: var(--card);
+    
     border: 1px solid var(--border);
     border-radius: 10px;
     box-shadow: var(--shadow);
@@ -752,10 +767,14 @@ position: fixed;
     gap: 16px;
     flex-wrap: wrap;
     font-size: .9rem;
+    bottom: 40px;
+    z-index: 200000;
+    left: 10px;
+    right: 10px;
 }
 
 .stats-item {
-    background: rgba(255,255,255,0.04);
+    background: var(--card);
     padding: 6px 12px;
     border-radius: 8px;
 }
@@ -819,6 +838,10 @@ position: fixed;
   aspect-ratio: var(--cover-ratio);
 }
 
+.bd-list.grouped{
+  grid-template-columns: repeat(1, 1fr);
+}
+
 /* ============================
    BARRE FIXE EN BAS (mobile)
    ============================ */
@@ -856,12 +879,6 @@ body.has-bottom-actions {
 @media (max-width: 640px) {
   .bottom-actions { display: flex; }
 
-  /* Masquer les boutons Export/Import en haut pour désencombrer l'en-tête */
-  .filters-actions #exportButton,
-  .filters-actions #importButton,
-  .filters-actions #importInput {
-    display: none !important;
-  }
 
   /* Ajuster l'espace réservé sous le contenu selon la hauteur du viewport */
   body.has-bottom-actions {
@@ -936,6 +953,28 @@ body.has-bottom-actions {
     filter: brightness(1);
 
 }
+
+/* ============================
+BADGE A PARAITRE
+============================ */
+
+
+.future-badge {
+  position: absolute;
+  top: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+
+  background: var(--accent);
+  color: #071a17;
+
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+
 
 
 

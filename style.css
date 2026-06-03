@@ -764,7 +764,7 @@ position: fixed;
     justify-content: center;
     margin: 6px;
     display: flex;
-    gap: 16px;
+    gap: 4px;
     flex-wrap: wrap;
     font-size: .9rem;
     bottom: 40px;
@@ -775,7 +775,7 @@ position: fixed;
 
 .stats-item {
     background: var(--card);
-    padding: 6px 12px;
+    padding: 6px 8px;
     border-radius: 8px;
 }
 
@@ -961,7 +961,7 @@ BADGE A PARAITRE
 
 .future-badge {
   position: absolute;
-  top: 150px;
+  top: 140px;
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;

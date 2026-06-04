@@ -99,6 +99,15 @@ function openDetailModal(bd) {
   byId("detailCover").src = bd.cover || "";
   byId("detailToggleRead").checked = bd.status === "lu";
 
+
+ const tagsHTML = (bd.tags || [])
+    .map(tag => `<span class="tag tag-${tag.toLowerCase()}">${escapeHTML(tag)}</span>`)
+    .join("");
+
+  byId("detailTags").innerHTML = tagsHTML;
+
+
+
   const modal = byId("detailModal");
   modal.dataset.bdId = bd.id;
   modal.classList.remove("hidden");
@@ -128,6 +137,7 @@ function editBD(id) {
     byId("dateInput").value = bd.date ?? "";
     byId("statusInput").value = bd.status ?? "a_lire";
     byId("pagesInput").value = bd.pages ?? "";
+    byId("tagsInput").value = (bd.tags || []).join(", ");
 
     importedCoverDataURL = bd.cover ?? "";
     byId("modal").dataset.editId = id;
@@ -167,6 +177,13 @@ async function saveBD() {
 
   const tomeValue = byId("tomeInput").value;
 
+
+  const tags = byId("tagsInput").value
+    .split(",")
+    .map(t => t.trim())
+    .filter(Boolean);
+
+
   const bd = {
     series: byId("seriesInput").value,
     tome: tomeValue ? Number(tomeValue) : null,
@@ -178,6 +195,7 @@ async function saveBD() {
     status: byId("statusInput").value,
     pages: byId("pagesInput").value,
     cover,
+    tags
   };
 
   const editId = byId("modal").dataset.editId;
@@ -285,6 +303,11 @@ function createBDCard(bd) {
   const futureBadge = isFutureDate(bd.date)
       ? `<div class="future-badge">Sortie le ${formatDateFR(bd.date)}</div>`
       : "";
+
+  const tagsHTML = (bd.tags || [])
+    .map(tag => `<span class="tag tag-${tag.toLowerCase()}">${escapeHTML(tag)}</span>`)
+    .join("");
+
 
   el.innerHTML = `
     ${bd.cover

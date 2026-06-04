@@ -569,7 +569,9 @@ position: fixed;
   justify-content: flex-end;
   gap: 8px;
   font-size: 0.8rem;
+  padding-bottom: 0.8rem;
 }
+
 
 
 /* =============================
@@ -626,6 +628,48 @@ position: fixed;
   overflow: auto;
   max-height: 100%;
   align-items: start;
+  
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.tag {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+  background: #333;
+  color: #fff;
+}
+
+.tag-fantasy {
+  background: #8b5cf6;
+}
+
+.tag-policier {
+  background: #3b82f6;
+}
+
+.tag-horreur {
+  background: #ef4444;
+}
+
+.tag-sf {
+  background: #10b981;
+}
+
+.tag-historique {
+  background: #f59e0b;
+}
+
+.tag-humour {
+  background: #ec4899;
 }
 
 /* Cover plus grande + beau rendu */

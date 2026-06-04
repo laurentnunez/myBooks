@@ -94,6 +94,7 @@
         <input id="artistInput" placeholder="Dessinateur(s)" />
         <div class="editor-pages-row">
           <input id="editorInput" placeholder="Éditeur" />
+          <input id="tagsInput" placeholder="Genre (ex: Fantasy, Horreur, Policier)" />
           <input id="pagesInput" type="number" placeholder="Pages" min="1" maxlength="4" />
         </div>
 
@@ -133,20 +134,25 @@
   <!-- Modale détails -->
   <div id="detailModal" class="modal hidden">
     <div class="modal-content detail-modal">
+  
+    <div class="read-toggle">
+        <span>À lire</span>
+            <label class="switch">
+              <input type="checkbox" id="detailToggleRead">
+        <span class="slider"></span>
+            </label>
+        <span>Lu</span>
+    </div>
+
       <div class="detail-layout">
 
         <!-- Cover -->
         <div class="detail-cover-wrap">
           <img id="detailCover" class="detail-cover" alt="Couverture BD">
+          <div id="detailTags" class="detail-tags"></div>
         </div>
-        <div class="read-toggle">
-          <span>À lire</span>
-          <label class="switch">
-            <input type="checkbox" id="detailToggleRead">
-            <span class="slider"></span>
-          </label>
-          <span>Lu</span>
-        </div>
+        
+        
         
         <!-- Infos -->
         <div class="detail-info">         
@@ -158,7 +164,7 @@
           </div>
 
           <div class="detail-meta">
-            
+        
             <div class="detail-title-line">
                 <span class="chip chip-accent tome-chip"><span id="detailTome"></span>
                 </span>
@@ -170,6 +176,9 @@
             <div class="meta-row"><span class="meta-label">Éditeur</span><span id="detailEditor" class="meta-value"></span></div>
             <div class="meta-row"><span class="meta-label">Parution</span><span id="detailDate" class="meta-value"></span></div>
           </div>
+
+          
+
         </div>
       </div>
 

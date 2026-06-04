@@ -674,6 +674,7 @@ position: fixed;
   font-weight: 600;
   background: #333;
   color: #fff;
+  margin-right: 0.2rem;
   
 }
 
@@ -682,7 +683,7 @@ position: fixed;
 }
 
 .tag-btn[data-tag="Historique"].active {
-  background: #e0d039;
+  background: #b4a308;
 }
 
 .tag-btn[data-tag="Fantasy"].active {
@@ -710,7 +711,7 @@ position: fixed;
 }
 
 .tag-historique {
-  background: #e0d039;
+  background: #b4a308;
 }
 
 .tag-aventure {

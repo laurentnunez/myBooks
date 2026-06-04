@@ -32,6 +32,8 @@ STATE
 let currentFilter = "collec";
 let importedCoverDataURL = "";
 let groupBySeries = localStorage.getItem("groupBySeries") === "true";
+let selectedTags = [];
+
 
 /* =========================================================
 UTILS
@@ -139,6 +141,21 @@ function editBD(id) {
     byId("pagesInput").value = bd.pages ?? "";
     byId("tagsInput").value = (bd.tags || []).join(", ");
 
+
+selectedTags = bd.tags || [];
+
+// reset visuel
+document.querySelectorAll(".tag-btn").forEach(btn => {
+  const tag = btn.dataset.tag;
+
+  if (selectedTags.includes(tag)) {
+    btn.classList.add("active");
+  } else {
+    btn.classList.remove("active");
+  }
+});
+
+
     importedCoverDataURL = bd.cover ?? "";
     byId("modal").dataset.editId = id;
 
@@ -195,7 +212,7 @@ async function saveBD() {
     status: byId("statusInput").value,
     pages: byId("pagesInput").value,
     cover,
-    tags
+    tags: selectedTags
   };
 
   const editId = byId("modal").dataset.editId;
@@ -388,6 +405,14 @@ function resetForm() {
 
   importedCoverDataURL = "";
   delete byId("modal").dataset.editId;
+
+selectedTags = [];
+
+document.querySelectorAll(".tag-btn").forEach(btn => {
+  btn.classList.remove("active");
+});
+
+
 }
 
 /* =========================================================
@@ -438,6 +463,21 @@ window.addEventListener("DOMContentLoaded", () => {
       loadBD();
     });
   });
+
+  document.querySelectorAll(".tag-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tag = btn.dataset.tag;
+
+      if (selectedTags.includes(tag)) {
+        selectedTags = selectedTags.filter(t => t !== tag);
+        btn.classList.remove("active");
+      } else {
+        selectedTags.push(tag);
+        btn.classList.add("active");
+      }
+    });
+  });
+
 
   document.querySelector('[data-filter="collec"]')?.classList.add("active");
 

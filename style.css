@@ -631,6 +631,34 @@ position: fixed;
   
 }
 
+.tags-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.tag-btn {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  background: #2a2f3a;
+  color: #ccc;
+  transition: 0.2s;
+  user-select: none;
+}
+
+.tag-btn:hover {
+  filter: brightness(1.2);
+}
+
+/* Etat sélectionné */
+.tag-btn.active {
+  color: #fff;
+}
+
+
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -646,6 +674,47 @@ position: fixed;
   font-weight: 600;
   background: #333;
   color: #fff;
+  
+}
+
+.tag-btn[data-tag="Aventure"].active {
+  background: #73b6f5;
+}
+
+.tag-btn[data-tag="Historique"].active {
+  background: #e0d039;
+}
+
+.tag-btn[data-tag="Fantasy"].active {
+  background: #8b5cf6;
+}
+
+.tag-btn[data-tag="Policier"].active {
+  background: #295499;
+}
+
+.tag-btn[data-tag="Horreur"].active {
+  background: #ef4444;
+}
+
+.tag-btn[data-tag="SF"].active {
+  background: #10b981;
+}
+
+.tag-btn[data-tag="Western"].active {
+  background: #f59e0b;
+}
+
+.tag-btn[data-tag="Humour"].active {
+  background: #ec4899;
+}
+
+.tag-historique {
+  background: #e0d039;
+}
+
+.tag-aventure {
+  background: #73b6f5;
 }
 
 .tag-fantasy {
@@ -653,7 +722,7 @@ position: fixed;
 }
 
 .tag-policier {
-  background: #3b82f6;
+  background: #295499;
 }
 
 .tag-horreur {
@@ -664,7 +733,7 @@ position: fixed;
   background: #10b981;
 }
 
-.tag-historique {
+.tag-western {
   background: #f59e0b;
 }
 

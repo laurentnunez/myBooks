@@ -139,7 +139,6 @@ function editBD(id) {
     byId("dateInput").value = bd.date ?? "";
     byId("statusInput").value = bd.status ?? "a_lire";
     byId("pagesInput").value = bd.pages ?? "";
-    byId("tagsInput").value = (bd.tags || []).join(", ");
 
 
 selectedTags = bd.tags || [];
@@ -195,12 +194,6 @@ async function saveBD() {
   const tomeValue = byId("tomeInput").value;
 
 
-  const tags = byId("tagsInput").value
-    .split(",")
-    .map(t => t.trim())
-    .filter(Boolean);
-
-
   const bd = {
     series: byId("seriesInput").value,
     tome: tomeValue ? Number(tomeValue) : null,
@@ -212,7 +205,9 @@ async function saveBD() {
     status: byId("statusInput").value,
     pages: byId("pagesInput").value,
     cover,
-    tags: selectedTags
+    tags: [...selectedTags].sort((a, b) =>
+    a.localeCompare(b, "fr", { sensitivity: "base" })
+)
   };
 
   const editId = byId("modal").dataset.editId;
@@ -322,8 +317,11 @@ function createBDCard(bd) {
       : "";
 
   const tagsHTML = (bd.tags || [])
-    .map(tag => `<span class="tag tag-${tag.toLowerCase()}">${escapeHTML(tag)}</span>`)
-    .join("");
+  .slice() // évite de modifier l'original
+  .sort((a, b) => a.localeCompare(b, "fr", { sensitivity: "base" }))
+  .map(tag => `<span class="tag tag-${tag.toLowerCase()}">${escapeHTML(tag)}</span>`)
+  .join("");
+
 
 
   el.innerHTML = `
@@ -411,7 +409,6 @@ selectedTags = [];
 document.querySelectorAll(".tag-btn").forEach(btn => {
   btn.classList.remove("active");
 });
-
 
 }
 

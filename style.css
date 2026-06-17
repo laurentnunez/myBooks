@@ -710,6 +710,10 @@ position: fixed;
   background: #ec4899;
 }
 
+.tag-btn[data-tag="Fantastique"].active {
+  background: #168300;
+}
+
 .tag-historique {
   background: #b4a308;
 }
@@ -740,6 +744,10 @@ position: fixed;
 
 .tag-humour {
   background: #ec4899;
+}
+
+.tag-fantastique {
+  background: #168300;
 }
 
 /* Cover plus grande + beau rendu */

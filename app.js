@@ -97,7 +97,7 @@ function openDetailModal(bd) {
   byId("detailAuthor").textContent = bd.author || "";
   byId("detailArtist").textContent = bd.artist || "";
   byId("detailEditor").textContent = bd.editor || "";
-  byId("detailDate").textContent = bd.date || "";
+  byId("detailDate").textContent = formatDateFR(bd.date);
   byId("detailCover").src = bd.cover || "";
   byId("detailToggleRead").checked = bd.status === "lu";
 
@@ -327,7 +327,7 @@ function createBDCard(bd) {
   el.innerHTML = `
     ${bd.cover
       ? `<img src="${bd.cover}" alt="cover"/>`
-      : `<div class="bd-cover">No cover</div>`
+      : `<div class="bd-cover">Pas de couverture</div>`
     }
 
     ${futureBadge}
@@ -504,5 +504,9 @@ function isFutureDate(dateStr) {
 
 function formatDateFR(dateStr) {
   if (!dateStr) return "";
-  return new Date(dateStr).toLocaleDateString("fr-FR");
+  return new Date(dateStr).toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  });
 }

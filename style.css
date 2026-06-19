@@ -638,6 +638,12 @@ position: fixed;
   margin-top: 6px;
 }
 
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
 .tag-btn {
   padding: 6px 10px;
   border-radius: 999px;
@@ -678,7 +684,7 @@ position: fixed;
   
 }
 
-.tag-btn[data-tag="Aventure"].active {
+.tag-btn[data-tag="Aventure-Action"].active {
   background: #73b6f5;
 }
 
@@ -690,7 +696,7 @@ position: fixed;
   background: #8b5cf6;
 }
 
-.tag-btn[data-tag="Policier"].active {
+.tag-btn[data-tag="Policier-Thriller"].active {
   background: #295499;
 }
 
@@ -714,11 +720,15 @@ position: fixed;
   background: #168300;
 }
 
+.tag-btn[data-tag="Tranche de Vie"].active {
+  background: #acacac;
+}
+
 .tag-historique {
   background: #b4a308;
 }
 
-.tag-aventure {
+.tag-aventure-action {
   background: #73b6f5;
 }
 
@@ -726,7 +736,7 @@ position: fixed;
   background: #8b5cf6;
 }
 
-.tag-policier {
+.tag-policier-thriller {
   background: #295499;
 }
 
@@ -748,6 +758,10 @@ position: fixed;
 
 .tag-fantastique {
   background: #168300;
+}
+
+.tag-tranche {
+  background: #acacac;
 }
 
 /* Cover plus grande + beau rendu */

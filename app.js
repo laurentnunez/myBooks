@@ -64,6 +64,39 @@ function toBase64(file) {
   });
 }
 
+function normalizeSerie(series = "") {
+  if (!series) return "";
+
+  // Ne pas retraiter si déjà normalisé
+  if (series.match(/\(.+\)$/)) return series;
+
+  const articles = ["Le", "La", "Les", "Un", "Une"];
+
+  const trimmed = series.trim();
+
+  // Cas L'
+  if (/^L[’']/i.test(trimmed)) {
+    const match = trimmed.match(/^(L[’'])(.+)/i);
+    if (match) {
+      const article = match[1];
+      const rest = match[2].trim();
+      return `${rest} (${article})`;
+    }
+  }
+
+  // Cas classiques
+  for (const art of articles) {
+    const regex = new RegExp(`^${art}\\s+(.+)`, "i");
+    const match = trimmed.match(regex);
+    if (match) {
+      const rest = match[1].trim();
+      return `${rest} (${art})`;
+    }
+  }
+
+  return trimmed;
+}
+
 /* =========================================================
 TOAST
 ========================================================= */
@@ -141,25 +174,39 @@ function editBD(id) {
     byId("pagesInput").value = bd.pages ?? "";
 
 
-selectedTags = bd.tags || [];
+    selectedTags = bd.tags || [];
 
-// reset visuel
-document.querySelectorAll(".tag-btn").forEach(btn => {
-  const tag = btn.dataset.tag;
+    // reset visuel
+    document.querySelectorAll(".tag-btn").forEach(btn => {
+      const tag = btn.dataset.tag;
 
-  if (selectedTags.includes(tag)) {
-    btn.classList.add("active");
-  } else {
-    btn.classList.remove("active");
-  }
-});
+      if (selectedTags.includes(tag)) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+      });
 
 
-    importedCoverDataURL = bd.cover ?? "";
-    byId("modal").dataset.editId = id;
+        importedCoverDataURL = bd.cover ?? "";
+        byId("modal").dataset.editId = id;
 
-    openModal();
-  };
+      openModal();
+    };
+
+    const isOneShot = bd.tome === 0;
+
+    byId("oneShotCheckbox").checked = isOneShot;
+
+    const tomeInput = byId("tomeInput");
+    if (isOneShot) {
+      tomeInput.value = "0";
+      tomeInput.disabled = true;
+    } else {
+      tomeInput.value = bd.tome ?? "";
+      tomeInput.disabled = false;
+    }
+
 }
 
 function deleteBD(id) {
@@ -191,12 +238,13 @@ async function saveBD() {
 
   const cover = file ? await toBase64(file) : importedCoverDataURL;
 
-  const tomeValue = byId("tomeInput").value;
+  const isOneShot = byId("oneShotCheckbox").checked;
+  const tomeValue = isOneShot ? 0 : byId("tomeInput").value;
 
 
   const bd = {
-    series: byId("seriesInput").value,
-    tome: tomeValue ? Number(tomeValue) : null,
+    series: normalizeSerie(byId("seriesInput").value),
+    tome: tomeValue !== null && tomeValue !== "" ? Number(tomeValue) : null,
     title: byId("titleInput").value,
     author: byId("authorInput").value,
     artist: byId("artistInput").value,
@@ -400,6 +448,8 @@ function resetForm() {
   byId("statusInput").value = "a_lire";
   byId("coverInput").value = "";
   byId("isbnInput").value = "";
+  byId("oneShotCheckbox").checked = false;
+  byId("tomeInput").disabled = false;
 
   importedCoverDataURL = "";
   delete byId("modal").dataset.editId;
@@ -447,6 +497,17 @@ window.addEventListener("DOMContentLoaded", () => {
     const id = Number(byId("detailModal").dataset.bdId);
     toggleReadStatus(id);
   };
+
+  byId("oneShotCheckbox").addEventListener("change", () => {
+  const tomeInput = byId("tomeInput");
+
+  if (byId("oneShotCheckbox").checked) {
+      tomeInput.value = "0";
+      tomeInput.disabled = true;
+    } else {
+      tomeInput.disabled = false;
+    }
+    });
 
 
   // filtres
